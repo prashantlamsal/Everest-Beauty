@@ -188,6 +188,12 @@ ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_EMAIL_SUBJECT_PREFIX = '[Everest Beauty] '
 
+# Logout settings
+ACCOUNT_LOGOUT_ON_GET = True  # Allow logout via GET request (for dropdown links)
+ACCOUNT_LOGOUT_REDIRECT_URL = '/'  # Redirect to home page after logout
+LOGIN_REDIRECT_URL = '/'  # Redirect to home page after login
+LOGOUT_REDIRECT_URL = '/'  # Django's logout redirect
+
 # Email settings (console in development; configure SMTP in production)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' if DEBUG else 'django.core.mail.backends.smtp.EmailBackend'
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='no-reply@everestbeauty.com')

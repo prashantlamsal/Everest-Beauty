@@ -1,5 +1,5 @@
 from review_system.models import Review
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, logout
 
 def admin_dashboard(request):
     User = get_user_model()
@@ -272,3 +272,10 @@ def get_or_create_cart(request):
         )
     
     return cart
+
+
+def custom_logout(request):
+    """Simple custom logout view"""
+    logout(request)
+    messages.success(request, 'You have been successfully signed out.')
+    return redirect('dashboard:home')

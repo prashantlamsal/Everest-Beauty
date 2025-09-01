@@ -78,15 +78,18 @@ function addToCart(productId, quantity = 1) {
         button.innerHTML = '<span class="spinner"></span> Adding...';
     }
 
-    fetch(`/cart/add/${productId}/`, {
+    fetch(`/api/cart/add/`, {
         method: 'POST',
         headers: {
             'X-CSRFToken': getCookie('csrftoken'),
-            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Type': 'application/json',
             'X-Requested-With': 'XMLHttpRequest',
             'Accept': 'application/json',
         },
-        body: `quantity=${quantity}`
+        body: JSON.stringify({
+            product_id: productId,
+            quantity: quantity
+        })
     })
     .then(response => response.json())
     .then(data => {
@@ -194,24 +197,32 @@ function toggleWishlist(productId) {
     if (!button) return;
 
     const isInWishlist = button.classList.contains('active');
-    const url = isInWishlist ? `/wishlist/remove/${productId}/` : `/wishlist/add/${productId}/`;
+    const url = isInWishlist ? `/api/wishlist/remove/` : `/api/wishlist/add/`;
 
     fetch(url, {
         method: 'POST',
         headers: {
             'X-CSRFToken': getCookie('csrftoken'),
-        }
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            product_id: productId
+        })
     })
     .then(response => response.json())
     .then(data => {
-        if (isInWishlist) {
-            button.classList.remove('active');
-            button.innerHTML = '<i class="far fa-heart"></i>';
-            showNotification('Removed from wishlist', 'success');
+        if (data.success) {
+            if (isInWishlist) {
+                button.classList.remove('active');
+                button.innerHTML = '<i class="far fa-heart"></i>';
+                showNotification('Removed from wishlist', 'success');
+            } else {
+                button.classList.add('active');
+                button.innerHTML = '<i class="fas fa-heart"></i>';
+                showNotification('Added to wishlist', 'success');
+            }
         } else {
-            button.classList.add('active');
-            button.innerHTML = '<i class="fas fa-heart"></i>';
-            showNotification('Added to wishlist', 'success');
+            showNotification(data.message || 'Error updating wishlist', 'error');
         }
     })
     .catch(error => {

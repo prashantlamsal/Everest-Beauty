@@ -1,139 +1,134 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Everest Beauty - Home{% endblock %}
+{% block title %}Everest Beauty - Rare Beauty Inspired Collection{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<section class="hero-section position-relative overflow-hidden">
-    <div class="hero-slider">
-        {% for banner in hero_banners %}
-        <div class="hero-slide position-relative">
-            <img src="{{ banner.image.url }}" alt="{{ banner.title }}" class="w-100 hero-image">
-            <div class="hero-content position-absolute top-50 start-50 translate-middle text-center text-white">
-                <h1 class="display-4 fw-bold mb-3">{{ banner.title }}</h1>
-                {% if banner.subtitle %}
-                    <p class="lead mb-4">{{ banner.subtitle }}</p>
-                {% endif %}
-                {% if banner.link_url %}
-                    <a href="{{ banner.link_url }}" class="btn btn-primary btn-lg">Shop Now</a>
-                {% endif %}
+<!-- Rare Beauty Inspired Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span id="dynamic-title">Find Your Rare</span>
+            </h1>
+            <p class="hero-subtitle" id="dynamic-subtitle">
+                Beauty is about finding confidence in your own skin and expressing your unique self.
+            </p>
+            <div class="hero-cta">
+                <a href="#featured-products" class="btn btn-primary btn-lg">
+                    <i class="fas fa-sparkles me-2"></i>
+                    Shop Collection
+                </a>
+                <a href="#about" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-heart me-2"></i>
+                    Our Story
+                </a>
             </div>
         </div>
-        {% empty %}
-                <!-- Default hero content -->
-                <div class="hero-slide position-relative luxury-hero-bg">
-                        <div class="hero-content position-absolute top-50 start-50 translate-middle text-center text-white luxury-hero-content">
-                                <h1 class="display-4 fw-bold mb-3 luxury-hero-title">
-                                    <span id="luxury-dynamic-title">Everest Beauty</span>
-                                </h1>
-                                <p class="lead mb-4 luxury-hero-desc" id="luxury-dynamic-desc">Discover authentic beauty from Nepal</p>
-                                <a href="#featured-products" class="btn btn-primary btn-lg luxury-hero-btn">Explore Products</a>
-                        </div>
-                </div>
-        {% endfor %}
     </div>
 </section>
 
-<!-- Categories Section -->
-<section class="categories-section py-5">
+<!-- Featured Categories - Rare Beauty Style -->
+<section class="category-section">
     <div class="container">
-        <div class="row">
-            <div class="col-12 text-center mb-5">
-                <h2 class="section-title">Shop by Category</h2>
-                <p class="text-muted">Discover our curated collection of beauty essentials</p>
-            </div>
+        <div class="text-center mb-5">
+            <h2 class="fw-bold text-rare-pink">Shop by Category</h2>
+            <p class="text-secondary fs-5">Find your perfect beauty match</p>
         </div>
-        <div class="row g-4">
-            {% for category in categories %}
-            <div class="col-md-4 col-lg-2">
-                <div class="category-card text-center p-3 rounded shadow-sm">
-                    {% if category.image %}
-                        <img src="{{ category.image.url }}" alt="{{ category.name }}" class="img-fluid mb-3" style="height: 80px; object-fit: cover;">
-                    {% else %}
-                        <div class="category-icon mb-3">
-                            <i class="fas fa-spa fa-3x text-primary"></i>
-                        </div>
-                    {% endif %}
-                    <h6 class="fw-bold">{{ category.name }}</h6>
-                    <small class="text-muted">{{ category.products.count }} products</small>
-                </div>
+        <div class="category-grid">
+            <div class="category-card" data-aos="fade-up">
+                <i class="category-icon fas fa-magic"></i>
+                <h3 class="category-title">Face</h3>
+                <p class="category-description">Complexion, concealer, blush & highlight</p>
+                <a href="#" class="btn btn-sm btn-outline-primary mt-3">Shop Face</a>
             </div>
-            {% endfor %}
+            <div class="category-card" data-aos="fade-up" data-aos-delay="100">
+                <i class="category-icon fas fa-eye"></i>
+                <h3 class="category-title">Eyes</h3>
+                <p class="category-description">Eyeshadow, liner, mascara & brows</p>
+                <a href="#" class="btn btn-sm btn-outline-primary mt-3">Shop Eyes</a>
+            </div>
+            <div class="category-card" data-aos="fade-up" data-aos-delay="200">
+                <i class="category-icon fas fa-kiss"></i>
+                <h3 class="category-title">Lips</h3>
+                <p class="category-description">Lipstick, gloss, liner & treatments</p>
+                <a href="#" class="btn btn-sm btn-outline-primary mt-3">Shop Lips</a>
+            </div>
+            <div class="category-card" data-aos="fade-up" data-aos-delay="300">
+                <i class="category-icon fas fa-leaf"></i>
+                <h3 class="category-title">Skincare</h3>
+                <p class="category-description">Cleansers, serums, moisturizers & masks</p>
+                <a href="#" class="btn btn-sm btn-outline-primary mt-3">Shop Skincare</a>
+            </div>
         </div>
     </div>
 </section>
 
 <!-- Featured Products -->
-<section id="featured-products" class="featured-products py-5 bg-light">
+<section id="featured-products" class="py-5" style="background: var(--white);">
     <div class="container">
-        <div class="row">
-            <div class="col-12 text-center mb-5">
-                <h2 class="section-title">Featured Products</h2>
-                <p class="text-muted">Handpicked beauty essentials for your daily routine</p>
-            </div>
+        <div class="text-center mb-5">
+            <h2 class="fw-bold text-rare-pink">Trending Now</h2>
+            <p class="text-secondary fs-5">Customer favorites that never disappoint</p>
         </div>
-        <div class="row g-4">
+        <div class="product-grid">
             {% for product in featured_products %}
-            <div class="col-md-6 col-lg-3">
-                <div class="product-card h-100 bg-white rounded shadow-sm overflow-hidden">
-                    <div class="product-image-container position-relative">
-                        {% if product.images.first %}
-                            <a href="{% url 'products:product_detail' product.slug %}">
-                                <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="product-image w-100">
-                            </a>
-                        {% else %}
-                            <a href="{% url 'products:product_detail' product.slug %}">
-                                <div class="product-placeholder d-flex align-items-center justify-content-center bg-light" style="height: 200px;">
-                                    <i class="fas fa-image fa-3x text-muted"></i>
-                                </div>
-                            </a>
-                        {% endif %}
-                        {% if product.discount_percentage > 0 %}
-                            <span class="badge bg-danger position-absolute top-0 end-0 m-2">-{{ product.discount_percentage }}%</span>
-                        {% endif %}
-                        <div class="product-actions position-absolute top-0 start-0 m-2">
-                            <button class="btn btn-sm btn-light rounded-circle wishlist-btn" data-product-id="{{ product.id }}">
-                                <i class="fas fa-heart"></i>
-                            </button>
+            <div class="card" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:100 }}">
+                <div class="position-relative">
+                    {% if product.images.first %}
+                        <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="card-img-top">
+                    {% else %}
+                        <div class="card-img-top d-flex align-items-center justify-content-center" style="height: 280px; background: var(--rare-soft-pink);">
+                            <i class="fas fa-image fa-3x text-rare-pink"></i>
                         </div>
+                    {% endif %}
+                    {% if product.discount_percentage > 0 %}
+                        <span class="badge position-absolute top-0 end-0 m-3" style="background: var(--rare-coral);">
+                            -{{ product.discount_percentage }}%
+                        </span>
+                    {% endif %}
+                    <div class="position-absolute top-0 start-0 m-3">
+                        <button class="btn btn-sm btn-light rounded-circle wishlist-btn" 
+                                data-product-id="{{ product.id }}"
+                                onclick="toggleWishlist({{ product.id }}, this)">
+                            <i class="far fa-heart"></i>
+                        </button>
                     </div>
-                    <div class="product-info p-3">
-                        <h6 class="product-brand text-muted small mb-1">{{ product.brand.name }}</h6>
-                        <h5 class="product-name fw-bold mb-2">
-                            <a href="{% url 'products:product_detail' product.slug %}" class="text-decoration-none text-dark">{{ product.name }}</a>
-                        </h5>
-                        <div class="product-rating mb-2">
-                            {% for i in "12345" %}
-                                {% if forloop.counter <= product.average_rating %}
-                                    <i class="fas fa-star text-warning"></i>
-                                {% else %}
-                                    <i class="far fa-star text-warning"></i>
-                                {% endif %}
-                            {% endfor %}
-                            <small class="text-muted ms-2">({{ product.review_count }})</small>
-                        </div>
-                        <div class="product-price mb-3">
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text">{{ product.description|truncatewords:15 }}</p>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="card-price">
                             {% if product.sale_price %}
                                 <span class="text-decoration-line-through text-muted me-2">Rs. {{ product.price }}</span>
-                                <span class="fw-bold text-danger">Rs. {{ product.sale_price }}</span>
+                                <span class="fw-bold text-rare-pink">Rs. {{ product.sale_price }}</span>
                             {% else %}
-                                <span class="fw-bold">Rs. {{ product.price }}</span>
+                                <span class="fw-bold text-rare-pink">Rs. {{ product.price }}</span>
                             {% endif %}
                         </div>
-                        <form method="post" action="{% url 'dashboard:add_to_cart' product.id %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="quantity" value="1">
-                            <button type="submit" class="btn btn-primary w-100">
-                                Add to Cart
-                            </button>
-                        </form>
+                        <div class="text-warning">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= product.average_rating %}
+                                    <i class="fas fa-star"></i>
+                                {% else %}
+                                    <i class="far fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
                     </div>
+                    <button type="button" 
+                            class="btn btn-primary w-100 add-to-cart-btn" 
+                            onclick="addToCart({{ product.id }})">
+                        <i class="fas fa-shopping-bag me-2"></i>Add to Bag
+                    </button>
                 </div>
             </div>
             {% empty %}
-            <div class="col-12 text-center">
-                <p class="text-muted">No featured products available at the moment.</p>
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-box-open fa-4x text-muted mb-3"></i>
+                <h5 class="text-muted">No featured products available</h5>
+                <p class="text-muted">Check back soon for exciting new products!</p>
             </div>
             {% endfor %}
         </div>
@@ -141,66 +136,68 @@
 </section>
 
 <!-- Bestsellers Section -->
-<section class="bestsellers-section py-5">
+<section class="py-5" style="background: var(--rare-soft-pink);">
     <div class="container">
-        <div class="row">
-            <div class="col-12 text-center mb-5">
-                <h2 class="section-title">Bestsellers</h2>
-                <p class="text-muted">Customer favorites that never disappoint</p>
-            </div>
+        <div class="text-center mb-5">
+            <h2 class="fw-bold text-rare-pink">Bestsellers</h2>
+            <p class="text-secondary fs-5">The products everyone is talking about</p>
         </div>
-        <div class="row g-4">
+        <div class="product-grid">
             {% for product in bestseller_products %}
-            <div class="col-md-6 col-lg-3">
-                <div class="product-card h-100 bg-white rounded shadow-sm overflow-hidden">
-                    <div class="product-image-container position-relative">
-                        {% if product.images.first %}
-                            <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="product-image w-100">
-                        {% else %}
-                            <div class="product-placeholder d-flex align-items-center justify-content-center bg-light" style="height: 200px;">
-                                <i class="fas fa-image fa-3x text-muted"></i>
-                            </div>
-                        {% endif %}
-                        <div class="product-actions position-absolute top-0 start-0 m-2">
-                            <button class="btn btn-sm btn-light rounded-circle wishlist-btn" data-product-id="{{ product.id }}">
-                                <i class="fas fa-heart"></i>
-                            </button>
+            <div class="card" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:200 }}">
+                <div class="position-relative">
+                    {% if product.images.first %}
+                        <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="card-img-top">
+                    {% else %}
+                        <div class="card-img-top d-flex align-items-center justify-content-center" style="height: 280px; background: var(--rare-cream);">
+                            <i class="fas fa-image fa-3x text-rare-pink"></i>
                         </div>
+                    {% endif %}
+                    <span class="badge position-absolute top-0 end-0 m-3" style="background: var(--rare-pink);">
+                        Bestseller
+                    </span>
+                    <div class="position-absolute top-0 start-0 m-3">
+                        <button class="btn btn-sm btn-light rounded-circle wishlist-btn" 
+                                data-product-id="{{ product.id }}"
+                                onclick="toggleWishlist({{ product.id }}, this)">
+                            <i class="far fa-heart"></i>
+                        </button>
                     </div>
-                    <div class="product-info p-3">
-                        <h6 class="product-brand text-muted small mb-1">{{ product.brand.name }}</h6>
-                        <h5 class="product-name fw-bold mb-2">{{ product.name }}</h5>
-                        <div class="product-rating mb-2">
-                            {% for i in "12345" %}
-                                {% if forloop.counter <= product.average_rating %}
-                                    <i class="fas fa-star text-warning"></i>
-                                {% else %}
-                                    <i class="far fa-star text-warning"></i>
-                                {% endif %}
-                            {% endfor %}
-                            <small class="text-muted ms-2">({{ product.review_count }})</small>
-                        </div>
-                        <div class="product-price mb-3">
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text">{{ product.description|truncatewords:15 }}</p>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="card-price">
                             {% if product.sale_price %}
                                 <span class="text-decoration-line-through text-muted me-2">Rs. {{ product.price }}</span>
-                                <span class="fw-bold text-danger">Rs. {{ product.sale_price }}</span>
+                                <span class="fw-bold text-rare-pink">Rs. {{ product.sale_price }}</span>
                             {% else %}
-                                <span class="fw-bold">Rs. {{ product.price }}</span>
+                                <span class="fw-bold text-rare-pink">Rs. {{ product.price }}</span>
                             {% endif %}
                         </div>
-                        <form method="post" action="{% url 'dashboard:add_to_cart' product.id %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="quantity" value="1">
-                            <button type="submit" class="btn btn-primary w-100">
-                                Add to Cart
-                            </button>
-                        </form>
+                        <div class="text-warning">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= product.average_rating %}
+                                    <i class="fas fa-star"></i>
+                                {% else %}
+                                    <i class="far fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
                     </div>
+                    <button type="button" 
+                            class="btn btn-primary w-100 add-to-cart-btn" 
+                            onclick="addToCart({{ product.id }})">
+                        <i class="fas fa-shopping-bag me-2"></i>Add to Bag
+                    </button>
                 </div>
             </div>
             {% empty %}
-            <div class="col-12 text-center">
-                <p class="text-muted">No bestseller products available at the moment.</p>
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-crown fa-4x text-muted mb-3"></i>
+                <h5 class="text-muted">No bestsellers available</h5>
+                <p class="text-muted">Be the first to discover our amazing products!</p>
             </div>
             {% endfor %}
         </div>
@@ -208,148 +205,225 @@
 </section>
 
 <!-- New Arrivals -->
-<section class="new-arrivals py-5 bg-light">
+<section class="py-5" style="background: var(--white);">
     <div class="container">
-        <div class="row">
-            <div class="col-12 text-center mb-5">
-                <h2 class="section-title">New Arrivals</h2>
-                <p class="text-muted">Fresh beauty products just for you</p>
-            </div>
+        <div class="text-center mb-5">
+            <h2 class="fw-bold text-rare-pink">New Arrivals</h2>
+            <p class="text-secondary fs-5">Fresh drops just for you</p>
         </div>
-        <div class="row g-4">
+        <div class="product-grid">
             {% for product in new_arrivals %}
-            <div class="col-md-6 col-lg-3">
-                <div class="product-card h-100 bg-white rounded shadow-sm overflow-hidden">
-                    <div class="product-image-container position-relative">
-                        {% if product.images.first %}
-                            <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="product-image w-100">
-                        {% else %}
-                            <div class="product-placeholder d-flex align-items-center justify-content-center bg-light" style="height: 200px;">
-                                <i class="fas fa-image fa-3x text-muted"></i>
-                            </div>
-                        {% endif %}
-                        <span class="badge bg-success position-absolute top-0 end-0 m-2">New</span>
-                        <div class="product-actions position-absolute top-0 start-0 m-2">
-                            <button class="btn btn-sm btn-light rounded-circle wishlist-btn" data-product-id="{{ product.id }}">
-                                <i class="fas fa-heart"></i>
-                            </button>
+            <div class="card" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:300 }}">
+                <div class="position-relative">
+                    {% if product.images.first %}
+                        <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="card-img-top">
+                    {% else %}
+                        <div class="card-img-top d-flex align-items-center justify-content-center" style="height: 280px; background: var(--rare-cream);">
+                            <i class="fas fa-image fa-3x text-rare-pink"></i>
                         </div>
+                    {% endif %}
+                    <span class="badge position-absolute top-0 end-0 m-3" style="background: var(--rare-coral);">
+                        New
+                    </span>
+                    <div class="position-absolute top-0 start-0 m-3">
+                        <button class="btn btn-sm btn-light rounded-circle wishlist-btn" 
+                                data-product-id="{{ product.id }}"
+                                onclick="toggleWishlist({{ product.id }}, this)">
+                            <i class="far fa-heart"></i>
+                        </button>
                     </div>
-                    <div class="product-info p-3">
-                        <h6 class="product-brand text-muted small mb-1">{{ product.brand.name }}</h6>
-                        <h5 class="product-name fw-bold mb-2">{{ product.name }}</h5>
-                        <div class="product-rating mb-2">
-                            {% for i in "12345" %}
-                                {% if forloop.counter <= product.average_rating %}
-                                    <i class="fas fa-star text-warning"></i>
-                                {% else %}
-                                    <i class="far fa-star text-warning"></i>
-                                {% endif %}
-                            {% endfor %}
-                            <small class="text-muted ms-2">({{ product.review_count }})</small>
-                        </div>
-                        <div class="product-price mb-3">
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text">{{ product.description|truncatewords:15 }}</p>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="card-price">
                             {% if product.sale_price %}
                                 <span class="text-decoration-line-through text-muted me-2">Rs. {{ product.price }}</span>
-                                <span class="fw-bold text-danger">Rs. {{ product.sale_price }}</span>
+                                <span class="fw-bold text-rare-pink">Rs. {{ product.sale_price }}</span>
                             {% else %}
-                                <span class="fw-bold">Rs. {{ product.price }}</span>
+                                <span class="fw-bold text-rare-pink">Rs. {{ product.price }}</span>
                             {% endif %}
                         </div>
-                        <form method="post" action="{% url 'dashboard:add_to_cart' product.id %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="quantity" value="1">
-                            <button type="submit" class="btn btn-primary w-100">
-                                Add to Cart
-                            </button>
-                        </form>
+                        <div class="text-warning">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= product.average_rating %}
+                                    <i class="fas fa-star"></i>
+                                {% else %}
+                                    <i class="far fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
                     </div>
+                    <button type="button" 
+                            class="btn btn-primary w-100 add-to-cart-btn" 
+                            onclick="addToCart({{ product.id }})">
+                        <i class="fas fa-shopping-bag me-2"></i>Add to Bag
+                    </button>
                 </div>
             </div>
             {% empty %}
-            <div class="col-12 text-center">
-                <p class="text-muted">No new arrivals available at the moment.</p>
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-sparkles fa-4x text-muted mb-3"></i>
+                <h5 class="text-muted">New arrivals coming soon!</h5>
+                <p class="text-muted">Be the first to discover our latest beauty innovations</p>
             </div>
             {% endfor %}
         </div>
     </div>
 </section>
 
-<!-- Call to Action -->
-<section class="cta-section py-5 bg-primary text-white">
+<!-- About Brand Section - Rare Beauty Inspired -->
+<section id="about" class="py-5" style="background: var(--rare-beige);">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6" data-aos="fade-right">
+                <h2 class="fw-bold text-rare-pink mb-4">Beauty for Everyone</h2>
+                <p class="fs-5 text-secondary mb-4">
+                    At Everest Beauty, we believe that beauty is about finding confidence in your own skin 
+                    and expressing your unique self. Our products are designed to help you feel comfortable, 
+                    beautiful, and authentic every single day.
+                </p>
+                <p class="text-secondary mb-4">
+                    From Nepal to the world, we're committed to creating high-quality, inclusive beauty 
+                    products that celebrate diversity and self-expression.
+                </p>
+                <a href="#" class="btn btn-primary">
+                    <i class="fas fa-arrow-right me-2"></i>
+                    Learn More About Us
+                </a>
+            </div>
+            <div class="col-lg-6" data-aos="fade-left">
+                <div class="text-center">
+                    <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-4" 
+                         style="width: 200px; height: 200px; background: var(--gradient-primary);">
+                        <i class="fas fa-heart fa-5x text-white"></i>
+                    </div>
+                    <h4 class="text-rare-pink mb-3">Mental Health Advocacy</h4>
+                    <p class="text-secondary">
+                        We're dedicated to breaking down unrealistic standards of perfection and supporting mental health initiatives worldwide.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter Signup - Rare Beauty Style -->
+<section class="py-5" style="background: var(--gradient-primary);">
     <div class="container text-center">
-        <h2 class="fw-bold mb-3">Ready to Transform Your Beauty Routine?</h2>
-        <p class="lead mb-4">Join thousands of customers who trust Everest Beauty for authentic, high-quality products</p>
-        <a href="#featured-products" class="btn btn-light btn-lg">Shop Now</a>
+        <div class="row justify-content-center">
+            <div class="col-lg-8" data-aos="fade-up">
+                <h2 class="fw-bold text-white mb-4">Stay in the Loop</h2>
+                <p class="text-white fs-5 mb-4">
+                    Get the latest updates on new products, exclusive offers, and beauty tips delivered straight to your inbox.
+                </p>
+                <form class="row g-3 justify-content-center">
+                    <div class="col-md-6">
+                        <input type="email" class="form-control form-control-lg" placeholder="Enter your email address" required>
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-paper-plane me-2"></i>
+                            Subscribe
+                        </button>
+                    </div>
+                </form>
+                <p class="text-white mt-3 small">
+                    By subscribing, you agree to our Privacy Policy and Terms of Service.
+                </p>
+            </div>
+        </div>
     </div>
 </section>
 {% endblock %}
 
 {% block extra_css %}
+<!-- AOS Animation Library -->
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
 <style>
+/* Hero Section Enhancements */
 .hero-section {
-    height: 520px;
-    background: linear-gradient(120deg, #f7f7ff 0%, #bfc0c0 100%);
-}
-
-.hero-image {
-    height: 520px;
-    object-fit: cover;
-    filter: grayscale(0.15) brightness(0.92) contrast(1.08);
-}
-
-.luxury-hero-bg {
-    height: 520px;
-    background: linear-gradient(120deg, #22223b 0%, #4f5d75 100%);
-    border-radius: 24px;
-    box-shadow: 0 8px 32px rgba(34,34,59,0.13);
+    background: var(--gradient-soft);
+    position: relative;
     overflow: hidden;
 }
 
-.luxury-hero-content {
-    padding: 2.5rem 1.5rem;
-    background: rgba(34,34,59,0.55);
-    border-radius: 18px;
-    box-shadow: 0 4px 24px rgba(34,34,59,0.10);
-    backdrop-filter: blur(8px);
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="%23E91E63" opacity="0.1"/><circle cx="80" cy="60" r="1.5" fill="%23FF6B6B" opacity="0.1"/><circle cx="60" cy="10" r="1" fill="%23FFB3B3" opacity="0.1"/></svg>');
+    background-size: 60px 60px;
+    animation: float 20s ease-in-out infinite;
 }
 
-.luxury-hero-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 3.2rem;
-    color: #ef8354;
-    letter-spacing: 2px;
-    text-shadow: 0 4px 24px rgba(34,34,59,0.18);
-    margin-bottom: 1.2rem;
-    animation: fadeInUp 1s cubic-bezier(.4,0,.2,1);
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
 }
 
-.luxury-hero-desc {
-    font-size: 1.4rem;
-    color: #fff;
-    opacity: 0.92;
-    margin-bottom: 2rem;
-    animation: fadeInUp 1.5s cubic-bezier(.4,0,.2,1);
+.hero-title {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    transition: var(--transition);
 }
 
-.luxury-hero-btn {
-    font-size: 1.1rem;
-    font-weight: 600;
-    padding: 0.8rem 2.2rem;
-    border-radius: 12px;
-    background: linear-gradient(90deg, #ef8354 0%, #4f5d75 100%);
+/* Dynamic text animation */
+#dynamic-title, #dynamic-subtitle {
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+/* Enhanced card hover effects */
+.card {
+    transition: var(--transition);
     border: none;
-    color: #fff;
-    box-shadow: 0 2px 8px rgba(34,34,59,0.10);
-    transition: background 0.22s cubic-bezier(.4,0,.2,1), transform 0.22s cubic-bezier(.4,0,.2,1);
-}
-.luxury-hero-btn:hover {
-    background: linear-gradient(90deg, #4f5d75 0%, #ef8354 100%);
-    color: #fff;
-    transform: scale(1.04) translateY(-2px);
 }
 
-@keyframes fadeInUp {
+.card:hover {
+    border-color: rgba(233, 30, 99, 0.3) !important;
+}
+
+.card:hover .card-img-top {
+    transform: scale(1.03);
+}
+
+/* Wishlist button enhancement */
+.wishlist-btn {
+    transition: var(--transition);
+    border: none;
+    box-shadow: var(--shadow-sm);
+}
+
+.wishlist-btn:hover {
+    background: var(--rare-pink) !important;
+    color: white !important;
+    transform: scale(1.1);
+}
+
+.wishlist-btn.active {
+    background: var(--rare-pink) !important;
+    color: white !important;
+}
+
+.wishlist-btn.active i {
+    color: white !important;
+}
+
+/* Add to cart button loading state */
+.add-to-cart-btn.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/* Custom animations */
+@keyframes slideInUp {
     from {
         opacity: 0;
         transform: translateY(30px);
@@ -359,62 +433,225 @@
         transform: translateY(0);
     }
 }
+
+.animate-fade-in {
+    animation: slideInUp 0.6s ease-out;
+}
+
+/* Newsletter section enhancement */
+form input:focus {
+    border-color: var(--white);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: clamp(2.5rem, 8vw, 4rem);
+    }
+    
+    .hero-cta {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .hero-cta .btn {
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-section {
+        padding: 6rem 0 4rem;
+    }
+    
+    .card-body {
+        padding: 1.5rem;
+    }
+    
+    .category-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
 </style>
 {% endblock %}
 
 {% block extra_js %}
+<!-- AOS Animation Library -->
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
 <script>
-// Dynamic luxury advertising text effect
-const luxuryTitles = [
-  "Everest Beauty",
-  "Luxury from the Himalayas",
-  "Nepal's Finest Beauty",
-  "Elevate Your Glow",
-  "Where Beauty Meets Tradition"
-];
-const luxuryDescs = [
-  "Discover authentic beauty from Nepal",
-  "Experience luxury skincare and cosmetics",
-  "Crafted with rare Himalayan botanicals",
-  "Unveil your natural radiance",
-  "Tradition, purity, and elegance in every product"
-];
-let luxuryIndex = 0;
-function updateLuxuryHero() {
-  document.getElementById('luxury-dynamic-title').textContent = luxuryTitles[luxuryIndex % luxuryTitles.length];
-  document.getElementById('luxury-dynamic-desc').textContent = luxuryDescs[luxuryIndex % luxuryDescs.length];
-  luxuryIndex++;
-}
-setInterval(updateLuxuryHero, 3500);
-document.addEventListener('DOMContentLoaded', function() {
-    updateLuxuryHero();
-    // Wishlist functionality
-    document.querySelectorAll('.wishlist-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const productId = this.dataset.productId;
-            toggleWishlist(productId);
-        });
-    });
+// Initialize AOS animations
+AOS.init({
+    duration: 800,
+    easing: 'ease-out',
+    once: true,
+    offset: 100
 });
 
-function toggleWishlist(productId) {
-    // AJAX call to toggle wishlist
-    fetch(`/wishlist/add/${productId}/`, {
+// Dynamic hero text - Rare Beauty inspired
+const heroTitles = [
+    "Find Your Rare",
+    "Express Yourself", 
+    "Beauty Redefined",
+    "Confidence Within",
+    "Authentically You",
+    "Rare Beauty"
+];
+
+const heroSubtitles = [
+    "Beauty is about finding confidence in your own skin and expressing your unique self.",
+    "Discover products that celebrate your individuality and make you feel amazing.",
+    "From Nepal to the world, we create beauty that's as unique as you are.",
+    "Self-expression through makeup and skincare that makes you feel confident.",
+    "Embrace your authentic beauty with products designed for everyone.",
+    "Quality, authenticity, and self-love in every product we create."
+];
+
+let currentIndex = 0;
+
+function updateHeroText() {
+    const titleElement = document.getElementById('dynamic-title');
+    const subtitleElement = document.getElementById('dynamic-subtitle');
+    
+    if (titleElement && subtitleElement) {
+        // Fade out
+        titleElement.style.opacity = '0';
+        titleElement.style.transform = 'translateY(20px)';
+        subtitleElement.style.opacity = '0';
+        subtitleElement.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            titleElement.textContent = heroTitles[currentIndex % heroTitles.length];
+            subtitleElement.textContent = heroSubtitles[currentIndex % heroSubtitles.length];
+            
+            // Fade in
+            titleElement.style.opacity = '1';
+            titleElement.style.transform = 'translateY(0)';
+            subtitleElement.style.opacity = '1';
+            subtitleElement.style.transform = 'translateY(0)';
+            
+            currentIndex++;
+        }, 500);
+    }
+}
+
+// Start hero text rotation
+setInterval(updateHeroText, 4000);
+
+// Enhanced wishlist functionality
+function toggleWishlist(productId, buttonElement) {
+    const icon = buttonElement.querySelector('i');
+    const originalClass = icon.className;
+    
+    // Add loading state
+    buttonElement.disabled = true;
+    icon.className = 'fas fa-spinner fa-spin';
+    
+    // Simulate API call (replace with actual API endpoint)
+    fetch(`/wishlist/toggle/${productId}/`, {
         method: 'POST',
         headers: {
             'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json',
         }
     })
     .then(response => response.json())
     .then(data => {
-        showNotification(data.message, 'success');
+        if (data.added) {
+            buttonElement.classList.add('active');
+            icon.className = 'fas fa-heart';
+            showNotification('Added to wishlist! ❤️', 'success');
+        } else {
+            buttonElement.classList.remove('active');
+            icon.className = 'far fa-heart';
+            showNotification('Removed from wishlist', 'info');
+        }
+        buttonElement.disabled = false;
     })
     .catch(error => {
         console.error('Error:', error);
-        showNotification('Error updating wishlist', 'error');
+        icon.className = originalClass;
+        buttonElement.disabled = false;
+        showNotification('Please sign in to use wishlist', 'warning');
     });
 }
 
+// Enhanced add to cart functionality
+function addToCart(productId) {
+    const button = document.querySelector(`.add-to-cart-btn[onclick*="${productId}"]`);
+    const originalText = button.innerHTML;
+    
+    // Show loading state
+    button.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Adding...';
+    button.disabled = true;
+    button.classList.add('loading');
+    
+    // Simulate API call (replace with actual API endpoint)
+    fetch(`/cart/add/${productId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            'quantity': 1
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Success state
+            button.innerHTML = '<i class="fas fa-check me-2"></i>Added to Bag!';
+            button.classList.remove('loading');
+            button.classList.add('btn-success');
+            
+            showNotification('Product added to bag! 🛍️', 'success');
+            
+            // Update cart count if element exists
+            const cartBadge = document.querySelector('.fa-shopping-bag + .badge');
+            if (cartBadge && data.cart_count) {
+                cartBadge.textContent = data.cart_count;
+            }
+            
+            // Reset button after 2 seconds
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.disabled = false;
+                button.classList.remove('btn-success');
+            }, 2000);
+        } else {
+            throw new Error(data.error || 'Failed to add to cart');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        
+        // Error state
+        button.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Try Again';
+        button.classList.remove('loading');
+        button.classList.add('btn-danger');
+        
+        showNotification(error.message || 'Failed to add to bag. Please try again.', 'error');
+        
+        // Reset button after 2 seconds
+        setTimeout(() => {
+            button.innerHTML = originalText;
+            button.disabled = false;
+            button.classList.remove('btn-danger');
+        }, 2000);
+    });
+}
+
+// Utility functions
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -430,31 +667,114 @@ function getCookie(name) {
     return cookieValue;
 }
 
-function updateCartCount(count) {
-    const cartBadge = document.querySelector('.fa-shopping-cart + .badge');
-    if (cartBadge) {
-        cartBadge.textContent = count;
-    }
-}
-
 function showNotification(message, type) {
-    // Create notification element
+    // Remove existing notifications
+    const existingNotifications = document.querySelectorAll('.toast-notification');
+    existingNotifications.forEach(notification => notification.remove());
+    
+    // Create notification
     const notification = document.createElement('div');
-    notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
-    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.className = `toast-notification alert alert-${type === 'success' ? 'success' : type === 'error' ? 'danger' : type === 'warning' ? 'warning' : 'info'} position-fixed`;
+    notification.style.cssText = `
+        top: 100px; 
+        right: 20px; 
+        z-index: 9999; 
+        min-width: 300px;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-xl);
+        border: none;
+        animation: slideInRight 0.5s ease-out;
+    `;
+    
+    const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warning' ? '⚠️' : 'ℹ️';
+    
     notification.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="d-flex align-items-center">
+            <span class="me-2">${icon}</span>
+            <span class="flex-grow-1">${message}</span>
+            <button type="button" class="btn-close ms-2" onclick="this.parentElement.parentElement.remove()"></button>
+        </div>
     `;
     
     document.body.appendChild(notification);
     
-    // Auto-remove after 5 seconds
+    // Auto-remove after 4 seconds
     setTimeout(() => {
         if (notification.parentNode) {
-            notification.remove();
+            notification.style.animation = 'slideOutRight 0.5s ease-out';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 500);
         }
-    }, 5000);
+    }, 4000);
 }
+
+// Add CSS for notifications if not already present
+if (!document.querySelector('#notification-styles')) {
+    const style = document.createElement('style');
+    style.id = 'notification-styles';
+    style.textContent = `
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes slideOutRight {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// Newsletter form enhancement
+document.addEventListener('DOMContentLoaded', function() {
+    const newsletterForm = document.querySelector('form');
+    if (newsletterForm) {
+        newsletterForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = this.querySelector('input[type="email"]').value;
+            const button = this.querySelector('button[type="submit"]');
+            const originalText = button.innerHTML;
+            
+            // Show loading
+            button.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Subscribing...';
+            button.disabled = true;
+            
+            // Simulate subscription (replace with actual API call)
+            setTimeout(() => {
+                showNotification('Thank you for subscribing! 💌', 'success');
+                this.querySelector('input[type="email"]').value = '';
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }, 1500);
+        });
+    }
+    
+    // Add scroll effects
+    window.addEventListener('scroll', function() {
+        const heroSection = document.querySelector('.hero-section');
+        const scrolled = window.pageYOffset;
+        const rate = scrolled * -0.5;
+        
+        if (heroSection) {
+            heroSection.style.transform = `translateY(${rate}px)`;
+        }
+    });
+});
 </script>
 {% endblock %}

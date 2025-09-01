@@ -52,7 +52,7 @@ class CartAPI(generics.RetrieveAPIView):
         return cart
 
 
-class AddToCartAPI(generics.CreateAPIView):
+class AddToCartAPI(generics.GenericAPIView):
     """API view for adding items to cart"""
     permission_classes = [IsAuthenticated]
     
@@ -62,7 +62,7 @@ class AddToCartAPI(generics.CreateAPIView):
         
         if not product_id:
             return Response(
-                {'error': 'Product ID is required'}, 
+                {'success': False, 'message': 'Product ID is required'}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
         
@@ -70,7 +70,7 @@ class AddToCartAPI(generics.CreateAPIView):
             product = Product.objects.get(id=product_id, is_active=True)
         except Product.DoesNotExist:
             return Response(
-                {'error': 'Product not found'}, 
+                {'success': False, 'message': 'Product not found'}, 
                 status=status.HTTP_404_NOT_FOUND
             )
         
@@ -85,57 +85,83 @@ class AddToCartAPI(generics.CreateAPIView):
             cart_item.quantity += quantity
             cart_item.save()
         
-        serializer = CartSerializer(cart)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({
+            'success': True,
+            'message': f'{product.name} added to cart!',
+            'cart_count': cart.total_items
+        }, status=status.HTTP_200_OK)
 
 
-class RemoveFromCartAPI(generics.DestroyAPIView):
+class RemoveFromCartAPI(generics.GenericAPIView):
     """API view for removing items from cart"""
     permission_classes = [IsAuthenticated]
-    queryset = CartItem.objects.all()
     
-    def destroy(self, request, *args, **kwargs):
-        cart_item = self.get_object()
+    def post(self, request, *args, **kwargs):
+        item_id = request.data.get('item_id')
         
-        if cart_item.cart.user != request.user:
+        if not item_id:
             return Response(
-                {'error': 'Not authorized'}, 
-                status=status.HTTP_403_FORBIDDEN
+                {'success': False, 'message': 'Item ID is required'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            cart_item = CartItem.objects.get(id=item_id, cart__user=request.user)
+        except CartItem.DoesNotExist:
+            return Response(
+                {'success': False, 'message': 'Cart item not found'}, 
+                status=status.HTTP_404_NOT_FOUND
             )
         
         cart_item.delete()
         
         cart = request.user.carts.first()
-        serializer = CartSerializer(cart)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({
+            'success': True,
+            'message': 'Item removed from cart',
+            'cart_total': float(cart.total_amount) if cart else 0,
+            'subtotal': float(cart.subtotal) if cart else 0
+        }, status=status.HTTP_200_OK)
 
 
-class UpdateCartItemAPI(generics.UpdateAPIView):
+class UpdateCartItemAPI(generics.GenericAPIView):
     """API view for updating cart item quantity"""
     permission_classes = [IsAuthenticated]
-    queryset = CartItem.objects.all()
-    serializer_class = CartItemSerializer
     
-    def update(self, request, *args, **kwargs):
-        cart_item = self.get_object()
+    def post(self, request, *args, **kwargs):
+        item_id = request.data.get('item_id')
+        quantity = int(request.data.get('quantity', 1))
         
-        if cart_item.cart.user != request.user:
+        if not item_id:
             return Response(
-                {'error': 'Not authorized'}, 
-                status=status.HTTP_403_FORBIDDEN
+                {'success': False, 'message': 'Item ID is required'}, 
+                status=status.HTTP_400_BAD_REQUEST
             )
         
-        quantity = int(request.data.get('quantity', 1))
+        try:
+            cart_item = CartItem.objects.get(id=item_id, cart__user=request.user)
+        except CartItem.DoesNotExist:
+            return Response(
+                {'success': False, 'message': 'Cart item not found'}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
         
         if quantity <= 0:
             cart_item.delete()
+            message = 'Item removed from cart'
         else:
             cart_item.quantity = quantity
             cart_item.save()
+            message = 'Quantity updated'
         
         cart = request.user.carts.first()
-        serializer = CartSerializer(cart)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({
+            'success': True,
+            'message': message,
+            'item_total': float(cart_item.total_price) if quantity > 0 else 0,
+            'cart_total': float(cart.total_amount) if cart else 0,
+            'subtotal': float(cart.subtotal) if cart else 0
+        }, status=status.HTTP_200_OK)
 
 
 class WishlistAPI(generics.ListAPIView):
@@ -147,18 +173,24 @@ class WishlistAPI(generics.ListAPIView):
         return Wishlist.objects.filter(user=self.request.user).select_related('product')
 
 
-class AddToWishlistAPI(generics.CreateAPIView):
+class AddToWishlistAPI(generics.GenericAPIView):
     """API view for adding products to wishlist"""
     permission_classes = [IsAuthenticated]
     
     def post(self, request, *args, **kwargs):
-        product_id = self.kwargs.get('product_id')
+        product_id = request.data.get('product_id')
+        
+        if not product_id:
+            return Response(
+                {'success': False, 'message': 'Product ID is required'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
         
         try:
             product = Product.objects.get(id=product_id, is_active=True)
         except Product.DoesNotExist:
             return Response(
-                {'error': 'Product not found'}, 
+                {'success': False, 'message': 'Product not found'}, 
                 status=status.HTTP_404_NOT_FOUND
             )
         
@@ -172,16 +204,24 @@ class AddToWishlistAPI(generics.CreateAPIView):
         else:
             message = f'{product.name} is already in your wishlist!'
         
-        return Response({'message': message}, status=status.HTTP_200_OK)
+        return Response({
+            'success': True,
+            'message': message
+        }, status=status.HTTP_200_OK)
 
 
-class RemoveFromWishlistAPI(generics.DestroyAPIView):
+class RemoveFromWishlistAPI(generics.GenericAPIView):
     """API view for removing products from wishlist"""
     permission_classes = [IsAuthenticated]
-    queryset = Wishlist.objects.all()
     
-    def destroy(self, request, *args, **kwargs):
-        product_id = self.kwargs.get('product_id')
+    def post(self, request, *args, **kwargs):
+        product_id = request.data.get('product_id')
+        
+        if not product_id:
+            return Response(
+                {'success': False, 'message': 'Product ID is required'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
         
         try:
             wishlist_item = Wishlist.objects.get(
@@ -191,12 +231,12 @@ class RemoveFromWishlistAPI(generics.DestroyAPIView):
             product_name = wishlist_item.product.name
             wishlist_item.delete()
             
-            return Response(
-                {'message': f'{product_name} removed from wishlist!'}, 
-                status=status.HTTP_200_OK
-            )
+            return Response({
+                'success': True,
+                'message': f'{product_name} removed from wishlist!'
+            }, status=status.HTTP_200_OK)
         except Wishlist.DoesNotExist:
             return Response(
-                {'error': 'Product not found in wishlist!'}, 
+                {'success': False, 'message': 'Product not found in wishlist'}, 
                 status=status.HTTP_404_NOT_FOUND
             )
