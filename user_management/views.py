@@ -25,12 +25,37 @@ def edit_profile(request):
     try:
         profile = request.user.userprofile
     except UserProfile.DoesNotExist:
-        profile = None
+        profile = UserProfile.objects.create(user=request.user)
     
     if request.method == 'POST':
-        # Handle profile update form
-        # This will be implemented in Phase 5
-        pass
+        # Update user fields
+        request.user.first_name = request.POST.get('first_name', '').strip()
+        request.user.last_name = request.POST.get('last_name', '').strip()
+        request.user.email = request.POST.get('email', '').strip()
+        request.user.save()
+        
+        # Update profile fields
+        profile.phone = request.POST.get('phone', '').strip()
+        profile.gender = request.POST.get('gender', '')
+        profile.skin_type = request.POST.get('skin_type', '').strip()
+        profile.skin_concerns = request.POST.get('skin_concerns', '').strip()
+        
+        # Handle date of birth
+        dob = request.POST.get('date_of_birth', '').strip()
+        if dob:
+            from datetime import datetime
+            try:
+                profile.date_of_birth = datetime.strptime(dob, '%Y-%m-%d').date()
+            except ValueError:
+                pass
+        
+        # Handle profile picture upload
+        if 'profile_picture' in request.FILES:
+            profile.profile_picture = request.FILES['profile_picture']
+        
+        profile.save()
+        messages.success(request, 'Profile updated successfully!')
+        return redirect('user_management:user_profile')
     
     context = {
         'profile': profile,
@@ -91,9 +116,33 @@ def user_addresses(request):
 def add_address(request):
     """Add new shipping address"""
     if request.method == 'POST':
-        # Handle address creation form
-        # This will be implemented in Phase 5
-        pass
+        full_name = request.POST.get('full_name', '').strip()
+        phone = request.POST.get('phone', '').strip()
+        address_line1 = request.POST.get('address_line1', '').strip()
+        address_line2 = request.POST.get('address_line2', '').strip()
+        city = request.POST.get('city', '').strip()
+        state = request.POST.get('state', '').strip()
+        postal_code = request.POST.get('postal_code', '').strip()
+        country = request.POST.get('country', 'Nepal').strip()
+        is_default = request.POST.get('is_default') == 'on'
+        
+        if full_name and phone and address_line1 and city and state:
+            ShippingAddress.objects.create(
+                user=request.user,
+                full_name=full_name,
+                phone=phone,
+                address_line1=address_line1,
+                address_line2=address_line2,
+                city=city,
+                state=state,
+                postal_code=postal_code,
+                country=country,
+                is_default=is_default
+            )
+            messages.success(request, 'Address added successfully!')
+            return redirect('user_management:user_addresses')
+        else:
+            messages.error(request, 'Please fill in all required fields.')
     
     return render(request, 'user_management/add_address.html')
 
@@ -103,9 +152,31 @@ def edit_address(request, address_id):
     address = get_object_or_404(ShippingAddress, id=address_id, user=request.user)
     
     if request.method == 'POST':
-        # Handle address update form
-        # This will be implemented in Phase 5
-        pass
+        full_name = request.POST.get('full_name', '').strip()
+        phone = request.POST.get('phone', '').strip()
+        address_line1 = request.POST.get('address_line1', '').strip()
+        address_line2 = request.POST.get('address_line2', '').strip()
+        city = request.POST.get('city', '').strip()
+        state = request.POST.get('state', '').strip()
+        postal_code = request.POST.get('postal_code', '').strip()
+        country = request.POST.get('country', 'Nepal').strip()
+        is_default = request.POST.get('is_default') == 'on'
+        
+        if full_name and phone and address_line1 and city and state:
+            address.full_name = full_name
+            address.phone = phone
+            address.address_line1 = address_line1
+            address.address_line2 = address_line2
+            address.city = city
+            address.state = state
+            address.postal_code = postal_code
+            address.country = country
+            address.is_default = is_default
+            address.save()
+            messages.success(request, 'Address updated successfully!')
+            return redirect('user_management:user_addresses')
+        else:
+            messages.error(request, 'Please fill in all required fields.')
     
     context = {
         'address': address,
@@ -126,3 +197,18 @@ def delete_address(request, address_id):
         'address': address,
     }
     return render(request, 'user_management/delete_address.html', context)
+
+@login_required
+def remove_from_wishlist(request, product_id):
+    """Remove product from wishlist"""
+    from products.models import Product
+    product = get_object_or_404(Product, id=product_id)
+    
+    try:
+        wishlist_item = Wishlist.objects.get(user=request.user, product=product)
+        wishlist_item.delete()
+        messages.success(request, f'{product.name} removed from wishlist!')
+    except Wishlist.DoesNotExist:
+        messages.error(request, 'Product not found in wishlist!')
+    
+    return redirect('user_management:user_wishlist')

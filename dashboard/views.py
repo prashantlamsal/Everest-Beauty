@@ -1,7 +1,21 @@
-from review_system.models import Review
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model, logout
+from django.contrib import messages
+from django.http import JsonResponse
+from django.db.models import Q
+from django.utils import timezone
+from django.views.decorators.csrf import ensure_csrf_cookie
+from products.models import Product, Category, Brand
+from .models import Cart, CartItem, Banner
+from user_management.models import Wishlist
+from review_system.models import Review
+import json
 
+
+@login_required
 def admin_dashboard(request):
+    """Admin dashboard view"""
     User = get_user_model()
     total_products = Product.objects.count()
     total_users = User.objects.count()
@@ -14,17 +28,6 @@ def admin_dashboard(request):
         'recent_users': recent_users,
     }
     return render(request, 'admin_dashboard.html', context)
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from django.http import JsonResponse
-from django.db.models import Q
-from django.utils import timezone
-from django.views.decorators.csrf import ensure_csrf_cookie
-from products.models import Product, Category, Brand
-from .models import Cart, CartItem, Banner
-from user_management.models import Wishlist
-import json
 
 
 @ensure_csrf_cookie

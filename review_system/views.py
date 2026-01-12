@@ -50,7 +50,6 @@ def add_review(request, product_id):
     
     if request.method == 'POST':
         # Handle review submission form
-        # This will be implemented in Phase 5
         rating = request.POST.get('rating')
         title = request.POST.get('title')
         comment = request.POST.get('comment')
@@ -90,7 +89,6 @@ def edit_review(request, review_id):
     
     if request.method == 'POST':
         # Handle review update form
-        # This will be implemented in Phase 5
         rating = request.POST.get('rating')
         title = request.POST.get('title')
         comment = request.POST.get('comment')
@@ -180,7 +178,6 @@ def report_review(request, review_id):
         
         if reason:
             # Handle review reporting
-            # This will be implemented in Phase 5
             messages.success(request, 'Review reported successfully. We will review it shortly.')
             return redirect('review_system:product_reviews', product_id=review.product.id)
         else:

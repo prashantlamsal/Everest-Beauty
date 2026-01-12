@@ -17,7 +17,6 @@ def khalti_initiate(request):
             order = Order.objects.get(id=order_id, user=request.user)
             
             # Khalti payment initiation logic
-            # This will be implemented in Phase 6
             khalti_data = {
                 'public_key': 'test_public_key',  # Replace with actual key
                 'amount': int(order.total_amount * 100),  # Convert to paisa

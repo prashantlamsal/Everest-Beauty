@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.http import JsonResponse
 from django.conf import settings
 from .models import Order, OrderItem, ShippingAddress
 from dashboard.models import Cart
@@ -138,9 +139,31 @@ def edit_shipping_address(request, address_id):
     address = get_object_or_404(ShippingAddress, id=address_id, user=request.user)
     
     if request.method == 'POST':
-        # Handle address update form
-        # This will be implemented in Phase 5
-        pass
+        full_name = request.POST.get('full_name', '').strip()
+        phone = request.POST.get('phone', '').strip()
+        address_line1 = request.POST.get('address_line1', '').strip()
+        address_line2 = request.POST.get('address_line2', '').strip()
+        city = request.POST.get('city', '').strip()
+        state = request.POST.get('state', '').strip()
+        postal_code = request.POST.get('postal_code', '').strip()
+        country = request.POST.get('country', 'Nepal').strip()
+        is_default = request.POST.get('is_default') == 'on'
+        
+        if full_name and phone and address_line1 and city and state:
+            address.full_name = full_name
+            address.phone = phone
+            address.address_line1 = address_line1
+            address.address_line2 = address_line2
+            address.city = city
+            address.state = state
+            address.postal_code = postal_code
+            address.country = country
+            address.is_default = is_default
+            address.save()
+            messages.success(request, 'Address updated successfully!')
+            return redirect('order_management:shipping_address')
+        else:
+            messages.error(request, 'Please fill in all required fields.')
     
     context = {
         'address': address,

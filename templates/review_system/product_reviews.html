@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Product Reviews - Everest Beauty{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Reviews for {{ product.name }}</h1>
+    
+    {% if has_purchased %}
+    <a href="{% url 'review_system:add_review' product.id %}" class="btn btn-primary mb-4">Write a Review</a>
+    {% endif %}
+    
+    {% if reviews %}
+        {% for review in reviews %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">{{ review.title }}</h5>
+                <p class="card-text">{{ review.comment }}</p>
+                <small class="text-muted">By {{ review.user.username }} on {{ review.created_at|date:"F d, Y" }}</small>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p class="text-muted">No reviews yet. Be the first to review!</p>
+    {% endif %}
+</div>
+{% endblock %}

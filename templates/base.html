@@ -269,8 +269,13 @@
             }
         });
 
-        // Add loading animation for buttons
+        // Add loading animation for buttons (but NOT form submit buttons)
         document.querySelectorAll('.btn').forEach(button => {
+            // Skip buttons that are inside forms or are submit buttons
+            if (button.type === 'submit' || button.closest('form')) {
+                return; // Don't interfere with form submissions
+            }
+            
             button.addEventListener('click', function() {
                 const originalText = this.innerHTML;
                 this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Loading...';

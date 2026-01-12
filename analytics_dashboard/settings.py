@@ -182,10 +182,13 @@ SITE_ID = 1
 # Allauth settings
 # Email verification is disabled across environments (login works without verifying email)
 ACCOUNT_EMAIL_VERIFICATION = 'none'
-# New-style settings to avoid deprecation warnings
-ACCOUNT_LOGIN_METHODS = { 'email' }
-ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
-ACCOUNT_USERNAME_REQUIRED = False
+# Allow both username and email login for the built-in User model
+ACCOUNT_LOGIN_METHODS = ['username', 'email']
+# Default User model still requires a username, so expose it on signup
+ACCOUNT_USERNAME_REQUIRED = True
+# Email is required; password fields are added automatically by allauth
+ACCOUNT_SIGNUP_FIELDS = ['username', 'email']
+ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_SUBJECT_PREFIX = '[Everest Beauty] '
 
 # Logout settings
