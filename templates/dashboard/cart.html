@@ -6,16 +6,17 @@
 {% block extra_css %}
 <style>
     .cart-container {
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        background: var(--white);
+        border-radius: 24px;
+        box-shadow: var(--shadow-lg);
         overflow: hidden;
+        border: 1px solid rgba(233, 30, 99, 0.08);
     }
     
     .cart-header {
-        background: linear-gradient(135deg, var(--primary-color), #e91e63);
-        color: white;
-        padding: 25px 30px;
+        background: var(--gradient-primary);
+        color: var(--white);
+        padding: 28px 30px;
         text-align: center;
     }
     
@@ -34,7 +35,9 @@
     .cart-item {
         display: flex;
         align-items: center;
-        padding: 25px 30px;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 22px 28px;
         border-bottom: 1px solid #f0f0f0;
         transition: all 0.3s ease;
     }
@@ -53,11 +56,12 @@
         object-fit: cover;
         border-radius: 15px;
         margin-right: 20px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        box-shadow: var(--shadow);
     }
     
     .item-details {
         flex: 1;
+        min-width: 0;
     }
     
     .item-name {
@@ -89,8 +93,8 @@
     .item-quantity {
         display: flex;
         align-items: center;
-        gap: 15px;
-        margin: 0 30px;
+        gap: 12px;
+        margin: 0 18px;
     }
     
     .quantity-btn {
@@ -132,7 +136,7 @@
         font-size: 1.3rem;
         font-weight: 700;
         color: var(--text-dark);
-        margin: 0 30px;
+        margin: 0 18px;
         min-width: 100px;
         text-align: right;
     }
@@ -154,9 +158,10 @@
     }
     
     .cart-summary {
-        background: #f8f9fa;
-        padding: 30px;
-        border-radius: 0 0 20px 20px;
+        background: var(--rare-cream);
+        padding: 26px 30px 30px;
+        border-radius: 0 0 24px 24px;
+        border-top: 1px solid rgba(0, 0, 0, 0.03);
     }
     
     .summary-row {
@@ -179,11 +184,11 @@
     .checkout-btn {
         width: 100%;
         padding: 18px;
-        background: var(--add-to-cart-bg);
+        background: var(--gradient-primary);
         border: none;
         color: #fff;
         border-radius: 18px;
-        font-size: 1.2rem;
+        font-size: 1.05rem;
         font-weight: 700;
         cursor: pointer;
         transition: var(--transition);
@@ -192,10 +197,10 @@
         letter-spacing: 0.5px;
     }
     .checkout-btn:hover {
-        background: var(--add-to-cart-hover);
+        background: linear-gradient(135deg, #c2185b 0%, #e91e63 100%);
         color: #fff;
-        transform: translateY(-2px) scale(1.03);
-        box-shadow: var(--shadow-hover);
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: var(--shadow-xl);
     }
     .checkout-btn:disabled {
         opacity: 0.6;
@@ -205,7 +210,8 @@
     
     .empty-cart {
         text-align: center;
-        padding: 60px 30px;
+        padding: 70px 30px 80px;
+        background: var(--gradient-soft);
     }
     
     .empty-cart i {
@@ -297,6 +303,51 @@
     @keyframes spin {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
+    }
+
+    /* Responsive cart layout */
+    @media (max-width: 992px) {
+        .cart-item {
+            align-items: flex-start;
+        }
+
+        .item-quantity {
+            margin: 0 8px;
+        }
+
+        .item-total {
+            margin: 0 8px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .cart-container {
+            border-radius: 20px;
+        }
+
+        .cart-item {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 18px 20px;
+        }
+
+        .item-image {
+            margin-right: 0;
+            margin-bottom: 12px;
+        }
+
+        .item-quantity {
+            margin: 10px 0 0;
+        }
+
+        .item-total {
+            margin: 10px 0 0;
+            text-align: left;
+        }
+
+        .cart-summary {
+            padding: 20px 18px 24px;
+        }
     }
 </style>
 {% endblock %}
