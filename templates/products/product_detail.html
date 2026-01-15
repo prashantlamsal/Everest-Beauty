@@ -1,0 +1,821 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} - Everest Beauty{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/review-system.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb Navigation -->
+<div class="breadcrumb-section" style="background: linear-gradient(135deg, #f43f5e 0%, #0ea5e9 100%); padding: 2rem 0;">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb" style="background: none; padding: 0; margin: 0;">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}" style="color: rgba(255,255,255,0.8);">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'products:category_products' product.category.slug %}" style="color: rgba(255,255,255,0.8);">{{ product.category.name }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page" style="color: white;">{{ product.name }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<!-- Product Hero Section -->
+<div class="product-hero" style="background: linear-gradient(135deg, rgba(244, 63, 94, 0.05) 0%, rgba(14, 165, 233, 0.05) 100%); padding: 3rem 0 2rem;">
+    <div class="container">
+        <div class="row g-4 align-items-start">
+            <!-- Product Gallery -->
+            <div class="col-lg-6">
+                <div class="product-gallery-container" style="background: white; border-radius: 20px; padding: 2rem; box-shadow: 0 10px 40px rgba(0,0,0,0.08); position: sticky; top: 20px;">
+                    <div class="main-image-wrapper" style="position: relative; margin-bottom: 1.5rem; border-radius: 16px; overflow: hidden; background: linear-gradient(135deg, #f2e9e4 0%, #e9d5c4 100%); min-height: 400px; display: flex; align-items: center; justify-content: center;">
+                        {% if product.images.first %}
+                            <img id="mainImage" src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="img-fluid" style="max-width: 100%; max-height: 400px; object-fit: contain; cursor: zoom-in; transition: transform 0.3s ease;">
+                        {% else %}
+                            <div style="text-align: center; color: #999;">
+                                <i class="fas fa-image fa-4x mb-3"></i>
+                                <p>No image available</p>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Thumbnail Images -->
+                    {% if product.images.all %}
+                    <div class="thumbnail-gallery" style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 0.5rem;">
+                        {% for image in product.images.all %}
+                        <img src="{{ image.image.url }}" alt="{{ product.name }}" class="thumbnail-image" 
+                             style="width: 70px; height: 70px; border-radius: 12px; object-fit: cover; cursor: pointer; border: 2px solid #e0e0e0; transition: all 0.3s ease;" 
+                             onclick="changeMainImage(this.src, event)">
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Product Information -->
+            <div class="col-lg-6">
+                <div style="padding: 2rem 0;">
+                    <!-- Product Badges -->
+                    <div class="product-badges" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+                        {% if product.is_new_arrival %}
+                        <span class="badge" style="background: linear-gradient(135deg, #f43f5e 0%, #ff1744 100%); color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">
+                            <i class="fas fa-star me-1"></i>New
+                        </span>
+                        {% endif %}
+                        {% if product.is_bestseller %}
+                        <span class="badge" style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">
+                            <i class="fas fa-crown me-1"></i>Bestseller
+                        </span>
+                        {% endif %}
+                        {% if product.is_organic %}
+                        <span class="badge" style="background: linear-gradient(135deg, #34d399 0%, #10b981 100%); color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">
+                            <i class="fas fa-leaf me-1"></i>Organic
+                        </span>
+                        {% endif %}
+                        {% if product.is_cruelty_free %}
+                        <span class="badge" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">
+                            <i class="fas fa-heart me-1"></i>Cruelty-Free
+                        </span>
+                        {% endif %}
+                        {% if product.is_vegan %}
+                        <span class="badge" style="background: linear-gradient(135deg, #ec4899 0%, #be185d 100%); color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">
+                            <i class="fas fa-leaf me-1"></i>Vegan
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Product Title & Brand -->
+                    <h1 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem; background: linear-gradient(135deg, #f43f5e 0%, #0ea5e9 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                        {{ product.name }}
+                    </h1>
+                    <p style="font-size: 1.2rem; color: #666; margin-bottom: 1.5rem;">
+                        <i class="fas fa-gem" style="color: #f43f5e; margin-right: 0.5rem;"></i>by <strong>{{ product.brand.name }}</strong>
+                    </p>
+
+                    <!-- Rating -->
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                        <button type="button" onclick="openReviewsSection()" style="display: flex; align-items: center; gap: 1rem; background: none; border: none; padding: 0; margin: 0; cursor: pointer;">
+                            <div style="font-size: 1.3rem; color: #fbbf24;">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= product.average_rating %}
+                                        <i class="fas fa-star"></i>
+                                    {% else %}
+                                        <i class="far fa-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <span style="color: #666; font-weight: 600;">
+                                {{ product.average_rating|floatformat:1 }} ({{ product.review_count }} reviews)
+                            </span>
+                        </button>
+                    </div>
+
+                    <!-- Price Section -->
+                    <div style="background: linear-gradient(135deg, #f43f5e 0%, #0ea5e9 100%); padding: 2rem; border-radius: 16px; margin-bottom: 2rem; color: white;">
+                        <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 0.5rem;">
+                            <span style="font-size: 3rem; font-weight: 900;">Rs. {{ product.current_price }}</span>
+                            {% if product.sale_price and product.price > product.sale_price %}
+                            <div>
+                                <span style="font-size: 1.3rem; text-decoration: line-through; opacity: 0.8;">Rs. {{ product.price }}</span>
+                                <div style="background: rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 8px; display: inline-block; margin-top: 0.5rem; font-weight: 700; font-size: 0.9rem;">
+                                    Save {{ product.discount_percentage }}%
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Weight Info -->
+                    {% if product.weight %}
+                    <p style="color: #666; margin-bottom: 2rem; font-size: 1.05rem;">
+                        <i class="fas fa-balance-scale" style="color: #f43f5e; margin-right: 0.5rem;"></i>
+                        <strong>Weight:</strong> {{ product.weight }} {{ product.weight_unit|upper }}
+                    </p>
+                    {% endif %}
+
+                    <!-- Stock Status -->
+                    <div style="margin-bottom: 2rem;">
+                        {% if product.images.count > 0 %}
+                        <span style="display: inline-block; padding: 0.75rem 1.5rem; border-radius: 25px; background: linear-gradient(135deg, #34d399 0%, #10b981 100%); color: white; font-weight: 700; font-size: 1.05rem;">
+                            <i class="fas fa-check-circle me-1"></i>In Stock
+                        </span>
+                        {% else %}
+                        <span style="display: inline-block; padding: 0.75rem 1.5rem; border-radius: 25px; background: #f5f5f5; color: #666; font-weight: 700; font-size: 1.05rem;">
+                            <i class="fas fa-times-circle me-1"></i>Out of Stock
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Quantity Selector -->
+                    <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2rem;">
+                        <label style="font-weight: 600; color: #333;">Quantity:</label>
+                        <div style="display: flex; align-items: center; background: #f5f5f5; border-radius: 12px; overflow: hidden;">
+                            <button onclick="changeQuantity(-1)" style="width: 44px; height: 44px; border: none; background: transparent; font-size: 1.2rem; cursor: pointer; color: #f43f5e; font-weight: 700;">−</button>
+                            <input type="number" id="quantity" class="form-control" value="1" min="1" max="100" onchange="syncQuantityInput()" style="width: 70px; border: none; text-align: center; background: white; font-weight: 700; font-size: 1.1rem;">
+                            <button onclick="changeQuantity(1)" style="width: 44px; height: 44px; border: none; background: transparent; font-size: 1.2rem; cursor: pointer; color: #f43f5e; font-weight: 700;">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+                        <button onclick="addToCart({{ product.id }})" style="flex: 1; padding: 1rem; background: linear-gradient(135deg, #f43f5e 0%, #0ea5e9 100%); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(244,63,94,0.3);">
+                            <i class="fas fa-shopping-bag me-2"></i>Add to Bag
+                        </button>
+                        <button class="wishlist-btn" onclick="toggleWishlist({{ product.id }}, '{{ product.name }}')" style="width: 50px; height: 50px; border: 2px solid #f43f5e; background: white; color: #f43f5e; border-radius: 12px; font-size: 1.3rem; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center;">
+                            <i class="far fa-heart"></i>
+                        </button>
+                    </div>
+
+                    <!-- Highlights -->
+                    <div style="background: #f5f5f5; padding: 1.5rem; border-radius: 12px; display: flex; flex-direction: column; gap: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div style="width: 40px; height: 40px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #10b981; font-size: 1.1rem;">
+                                <i class="fas fa-truck"></i>
+                            </div>
+                            <div>
+                                <p style="margin: 0; font-weight: 700; color: #333;">Free Delivery</p>
+                                <p style="margin: 0; font-size: 0.9rem; color: #666;">On orders over Rs. 1,000</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div style="width: 40px; height: 40px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #0ea5e9; font-size: 1.1rem;">
+                                <i class="fas fa-undo"></i>
+                            </div>
+                            <div>
+                                <p style="margin: 0; font-weight: 700; color: #333;">Easy Returns</p>
+                                <p style="margin: 0; font-size: 0.9rem; color: #666;">30-day return policy</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div style="width: 40px; height: 40px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #f43f5e; font-size: 1.1rem;">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div>
+                                <p style="margin: 0; font-weight: 700; color: #333;">100% Authentic</p>
+                                <p style="margin: 0; font-size: 0.9rem; color: #666;">Genuine products guaranteed</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Product Details Tabs -->
+<section style="padding: 4rem 0; background: white;">
+    <div class="container">
+        <div style="border-bottom: 3px solid #f0f0f0; margin-bottom: 3rem; display: flex; gap: 2rem; overflow-x: auto;">
+            <button class="tab-btn active" data-tab="description" onclick="showTab('description', event)" style="padding: 1rem 1.5rem; border: none; background: none; font-size: 1.1rem; font-weight: 700; color: #666; border-bottom: 3px solid transparent; cursor: pointer; transition: all 0.3s ease; white-space: nowrap;">
+                Description
+            </button>
+            <button class="tab-btn" data-tab="ingredients" onclick="showTab('ingredients', event)" style="padding: 1rem 1.5rem; border: none; background: none; font-size: 1.1rem; font-weight: 700; color: #666; border-bottom: 3px solid transparent; cursor: pointer; transition: all 0.3s ease; white-space: nowrap;">
+                Ingredients
+            </button>
+            <button class="tab-btn" data-tab="how-to-use" onclick="showTab('how-to-use', event)" style="padding: 1rem 1.5rem; border: none; background: none; font-size: 1.1rem; font-weight: 700; color: #666; border-bottom: 3px solid transparent; cursor: pointer; transition: all 0.3s ease; white-space: nowrap;">
+                How to Use
+            </button>
+            <button class="tab-btn" data-tab="reviews" onclick="showTab('reviews', event)" style="padding: 1rem 1.5rem; border: none; background: none; font-size: 1.1rem; font-weight: 700; color: #666; border-bottom: 3px solid transparent; cursor: pointer; transition: all 0.3s ease; white-space: nowrap;">
+                Reviews ({{ product.review_count }})
+            </button>
+        </div>
+
+        <!-- Description Tab -->
+        <div id="description" class="tab-content active">
+            <div class="row">
+                <div class="col-lg-8">
+                    <h3 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 1.5rem; color: #333;">Product Details</h3>
+                    <div style="color: #666; line-height: 1.8; font-size: 1.05rem;">
+                        {{ product.description|linebreaks }}
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div style="background: linear-gradient(135deg, #f43f5e15 0%, #0ea5e915 100%); padding: 2rem; border-radius: 16px; border-left: 5px solid #f43f5e;">
+                        <h5 style="font-weight: 700; margin-bottom: 1.5rem; color: #333;">Quick Info</h5>
+                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <div>
+                                <p style="margin: 0; font-size: 0.9rem; color: #999; text-transform: uppercase; font-weight: 700;">SKU</p>
+                                <p style="margin: 0; font-size: 1.1rem; color: #333; font-weight: 600;">{{ product.sku }}</p>
+                            </div>
+                            <div>
+                                <p style="margin: 0; font-size: 0.9rem; color: #999; text-transform: uppercase; font-weight: 700;">Category</p>
+                                <p style="margin: 0; font-size: 1.1rem; color: #333; font-weight: 600;">{{ product.category.name }}</p>
+                            </div>
+                            <div>
+                                <p style="margin: 0; font-size: 0.9rem; color: #999; text-transform: uppercase; font-weight: 700;">Brand</p>
+                                <p style="margin: 0; font-size: 1.1rem; color: #333; font-weight: 600;">{{ product.brand.name }}</p>
+                            </div>
+                            <div>
+                                <p style="margin: 0; font-size: 0.9rem; color: #999; text-transform: uppercase; font-weight: 700;">Product Type</p>
+                                <p style="margin: 0; font-size: 1.1rem; color: #333; font-weight: 600; text-transform: capitalize;">{{ product.get_product_type_display }}</p>
+                            </div>
+                            {% if product.weight %}
+                            <div>
+                                <p style="margin: 0; font-size: 0.9rem; color: #999; text-transform: uppercase; font-weight: 700;">Weight</p>
+                                <p style="margin: 0; font-size: 1.1rem; color: #333; font-weight: 600;">{{ product.weight }} {{ product.weight_unit|upper }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ingredients Tab -->
+        <div id="ingredients" class="tab-content" style="display: none;">
+            <h3 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 2rem; color: #333;">Ingredients</h3>
+            {% if product.ingredients %}
+            <div style="background: white; padding: 2rem; border-radius: 16px; border: 2px solid #f0f0f0;">
+                <div style="color: #666; line-height: 1.8; font-size: 1.05rem; white-space: pre-line;">
+                    {{ product.ingredients }}
+                </div>
+            </div>
+            {% else %}
+            <div style="text-align: center; padding: 3rem; background: #f5f5f5; border-radius: 16px;">
+                <p style="color: #999; font-size: 1.1rem;">
+                    <i class="fas fa-info-circle" style="margin-right: 0.5rem;"></i>
+                    Ingredients information not available for this product.
+                </p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- How to Use Tab -->
+        <div id="how-to-use" class="tab-content" style="display: none;">
+            <h3 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 2rem; color: #333;">How to Use</h3>
+            {% if product.how_to_use %}
+            <div style="background: white; padding: 2rem; border-radius: 16px; border: 2px solid #f0f0f0;">
+                <div style="color: #666; line-height: 1.8; font-size: 1.05rem; white-space: pre-line;">
+                    {{ product.how_to_use }}
+                </div>
+            </div>
+            {% else %}
+            <div style="text-align: center; padding: 3rem; background: #f5f5f5; border-radius: 16px;">
+                <p style="color: #999; font-size: 1.1rem;">
+                    <i class="fas fa-info-circle" style="margin-right: 0.5rem;"></i>
+                    Usage instructions not available for this product.
+                </p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Reviews Tab -->
+        <div id="reviews" class="tab-content" style="display: none;">
+            <!-- Quick Rating Section -->
+            <div id="quick-review-stars" style="background: linear-gradient(135deg, #f43f5e15 0%, #0ea5e915 100%); padding: 2rem; border-radius: 16px; margin-bottom: 2rem; border: 2px solid rgba(244, 63, 94, 0.1);">
+                <h4 style="margin: 0 0 1rem 0; font-weight: 700; color: #333; font-size: 1.1rem;">
+                    <i class="fas fa-star" style="color: #fbbf24; margin-right: 0.5rem;"></i>
+                    How would you rate this product?
+                </h4>
+                <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+                    {% for i in "12345" %}
+                    <button onclick="openReviewModal({{ i }})" class="quick-star-btn" data-rating="{{ i }}" style="background: none; border: none; font-size: 2.5rem; color: #e0e0e0; cursor: pointer; transition: all 0.2s ease; padding: 0; transform: scale(1);" onmouseover="this.style.color='#fbbf24'; this.style.transform='scale(1.2)';" onmouseout="this.style.color='#e0e0e0'; this.style.transform='scale(1)';">
+                        <i class="far fa-star"></i>
+                    </button>
+                    {% endfor %}
+                </div>
+                <p style="margin: 1rem 0 0 0; color: #666; font-size: 0.95rem;">
+                    <i class="fas fa-info-circle" style="color: #f43f5e; margin-right: 0.5rem;"></i>
+                    Click a star to share your experience
+                </p>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h3 style="font-size: 1.8rem; font-weight: 700; color: #333; margin: 0;">Customer Reviews ({{ product.review_count }})</h3>
+            </div>
+
+            {% if active_reviews %}
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(500px, 1fr)); gap: 2rem;">
+                {% for review in active_reviews|slice:":5" %}
+                <div style="background: linear-gradient(135deg, white 0%, #f5f5f5 100%); padding: 2rem; border-radius: 16px; border-left: 5px solid #f43f5e; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1.5rem;">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div style="width: 44px; height: 44px; background: linear-gradient(135deg, #f43f5e 0%, #0ea5e9 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.1rem;">
+                                {{ review.user.first_name|first|upper|default:review.user.username|first|upper }}
+                            </div>
+                            <div>
+                                <p style="margin: 0; font-weight: 700; color: #333;">{{ review.user.first_name|default:review.user.username }}</p>
+                                <div style="font-size: 0.9rem; color: #fbbf24;">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= review.rating %}
+                                            <i class="fas fa-star"></i>
+                                        {% else %}
+                                            <i class="far fa-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        {% if review.is_verified_purchase %}
+                        <span style="background: #10b981; color: white; padding: 0.4rem 0.8rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">
+                            ✓ Verified
+                        </span>
+                        {% endif %}
+                    </div>
+                    <p style="color: #666; line-height: 1.6; margin-bottom: 1rem;">{{ review.comment|truncatewords:50 }}</p>
+                    <p style="color: #999; font-size: 0.9rem; margin: 0;">
+                        <i class="far fa-calendar me-1"></i>{{ review.created_at|date:"M d, Y" }}
+                    </p>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if active_reviews|length > 5 %}
+            <div style="text-align: center; margin-top: 2rem;">
+                <a href="{% url 'review_system:product_reviews' product.id %}" style="background: linear-gradient(135deg, #f43f5e 0%, #0ea5e9 100%); color: white; padding: 0.75rem 1.5rem; border-radius: 12px; text-decoration: none; font-weight: 700; display: inline-block; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(244, 63, 94, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(244, 63, 94, 0.3)'">
+                    View All {{ product.review_count }} Reviews <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+            {% endif %}
+
+            {% else %}
+            <div class="empty-reviews-state">
+                <i class="fas fa-comments"></i>
+                <h4>No Reviews Yet</h4>
+                <p>Be the first to share your thoughts about this product</p>
+                <a href="{% url 'review_system:add_review' product.id %}" class="btn">
+                    <i class="fas fa-pen-fancy me-1"></i>Write First Review
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Related Products Section -->
+{% if related_products %}
+<section style="padding: 4rem 0; background: linear-gradient(135deg, #f43f5e15 0%, #0ea5e915 100%);">
+    <div class="container">
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <h2 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 0.5rem; background: linear-gradient(135deg, #f43f5e 0%, #0ea5e9 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                You Might Also Like
+            </h2>
+            <p style="color: #666; font-size: 1.05rem;">
+                Explore similar products from our collection
+            </p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 2rem;">
+            {% for related_product in related_products %}
+            <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 12px 24px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)'">
+                <a href="{% url 'products:product_detail' related_product.slug %}" style="text-decoration: none; color: inherit; display: block;">
+                    <div style="background: linear-gradient(135deg, #f2e9e4 0%, #e9d5c4 100%); height: 250px; display: flex; align-items: center; justify-content: center; position: relative;">
+                        {% if related_product.images.first %}
+                            <img src="{{ related_product.images.first.image.url }}" alt="{{ related_product.name }}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                        {% else %}
+                            <i class="fas fa-image fa-3x" style="color: #999;"></i>
+                        {% endif %}
+                        {% if related_product.discount_percentage > 0 %}
+                        <span style="position: absolute; top: 1rem; right: 1rem; background: linear-gradient(135deg, #f43f5e 0%, #0ea5e9 100%); color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; font-weight: 700;">
+                            -{{ related_product.discount_percentage }}%
+                        </span>
+                        {% endif %}
+                    </div>
+                    <div style="padding: 1.5rem;">
+                        <h5 style="margin: 0 0 0.5rem 0; font-weight: 700; color: #333; line-height: 1.4;">{{ related_product.name }}</h5>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                            <div style="font-size: 0.9rem; color: #fbbf24;">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= related_product.average_rating %}
+                                        <i class="fas fa-star"></i>
+                                    {% else %}
+                                        <i class="far fa-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <span style="color: #999; font-size: 0.9rem;">({{ related_product.review_count }})</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 1.3rem; font-weight: 800; background: linear-gradient(135deg, #f43f5e 0%, #0ea5e9 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                                Rs. {{ related_product.current_price }}
+                            </span>
+                            {% if related_product.sale_price and related_product.price > related_product.sale_price %}
+                            <span style="font-size: 0.9rem; color: #999; text-decoration: line-through;">Rs. {{ related_product.price }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // CSRF Token Helper
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    // Update cart count in navbar - uses global function from base.html
+    function updateCartCount() {
+        if (typeof updateNavbarCartCount === 'function') {
+            try {
+                fetch('/api/cart/', {
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.total_items !== undefined) {
+                            updateNavbarCartCount(data.total_items);
+                        }
+                    })
+                    .catch(error => console.error('Note: Cart API may not be fully available'));
+            } catch(e) {
+                // Silent fail
+            }
+        }
+    }
+    
+    // Update wishlist count in navbar - uses global function from base.html
+    function updateWishlistCount(count) {
+        if (typeof updateNavbarWishlistCount === 'function') {
+            updateNavbarWishlistCount(count);
+        }
+    }
+    
+    function changeMainImage(src, event) {
+        if (event) {
+            event.preventDefault();
+        }
+        document.getElementById('mainImage').src = src;
+        
+        // Update active thumbnail
+        document.querySelectorAll('.thumbnail-image').forEach(thumb => {
+            thumb.style.borderColor = '#e0e0e0';
+        });
+        
+        if (event && event.target) {
+            event.target.style.borderColor = '#f43f5e';
+        }
+    }
+    
+    function changeQuantity(change) {
+        const input = document.getElementById('quantity');
+        let value = parseInt(input.value) || 1;
+        value += change;
+        if (value < 1) value = 1;
+        if (value > 100) value = 100;
+        input.value = value;
+    }
+    
+    function syncQuantityInput() {
+        const input = document.getElementById('quantity');
+        let value = parseInt(input.value);
+        if (isNaN(value) || value < 1) value = 1;
+        if (value > 100) value = 100;
+        input.value = value;
+    }
+    
+    function showTab(tabName, event) {
+        if (event) {
+            event.preventDefault();
+        }
+        
+        // Hide all tab contents
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.style.display = 'none';
+        });
+        
+        // Remove active class from all buttons
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.style.borderBottomColor = 'transparent';
+            btn.style.color = '#666';
+        });
+        
+        // Show selected tab
+        const tabElement = document.getElementById(tabName);
+        if (tabElement) {
+            tabElement.style.display = 'block';
+        }
+        
+        // Mark button as active (works with or without a click event)
+        const activeBtn = event?.target || document.querySelector(`.tab-btn[data-tab="${tabName}"]`);
+        if (activeBtn) {
+            activeBtn.style.borderBottomColor = '#f43f5e';
+            activeBtn.style.color = '#f43f5e';
+        }
+    }
+
+    // Jump from summary stars to the reviews tab and scroll to quick rating
+    function openReviewsSection() {
+        showTab('reviews');
+        const reviewsTabBtn = document.querySelector('.tab-btn[data-tab="reviews"]');
+        if (reviewsTabBtn) {
+            reviewsTabBtn.style.borderBottomColor = '#f43f5e';
+            reviewsTabBtn.style.color = '#f43f5e';
+        }
+        const target = document.getElementById('quick-review-stars') || document.getElementById('reviews');
+        if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+    
+    function addToCart(productId) {
+        // Find the "Add to Bag" button
+        const buttons = document.querySelectorAll('button');
+        let button = null;
+        for (let btn of buttons) {
+            if (btn.textContent.includes('Add to Bag')) {
+                button = btn;
+                break;
+            }
+        }
+        
+        if (!button) {
+            console.error('Add to Bag button not found');
+            return;
+        }
+        
+        const quantity = document.getElementById('quantity');
+        if (!quantity) {
+            console.error('Quantity input not found');
+            return;
+        }
+        
+        button.disabled = true;
+        const originalHTML = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Adding...';
+        
+        fetch('/api/cart/add/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                product_id: productId,
+                quantity: parseInt(quantity.value) || 1
+            })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Update cart count without showing confirmation popup
+                if (typeof updateCartCount === 'function') {
+                    updateCartCount();
+                }
+            } else {
+                // Only show error feedback
+                if (typeof showConfirm === 'function') {
+                    showConfirm(data.message || 'Failed to add product to bag', 'Error');
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            if (typeof showConfirm === 'function') {
+                showConfirm('Network error: ' + error.message, 'Error');
+            }
+        })
+        .finally(() => {
+            button.disabled = false;
+            button.innerHTML = originalHTML;
+        });
+    }
+    
+    function toggleWishlist(productId, productName) {
+        // Find the wishlist button
+        const button = document.querySelector('.wishlist-btn');
+        if (!button) {
+            console.error('Wishlist button not found');
+            return;
+        }
+        
+        // Check if button has gradient (active state) - more reliable check
+        const bgStyle = button.style.background || window.getComputedStyle(button).background;
+        const isActive = bgStyle && (bgStyle.includes('gradient') || bgStyle.includes('rgb'));
+        
+        fetch(`/api/wishlist/${isActive ? 'remove' : 'add'}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                product_id: productId
+            })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Toggle button appearance
+                if (isActive) {
+                    // Remove from wishlist - revert to outline style
+                    button.style.background = 'white';
+                    button.style.color = '#f43f5e';
+                    button.innerHTML = '<i class="far fa-heart"></i>';
+                } else {
+                    // Add to wishlist - filled style
+                    button.style.background = 'linear-gradient(135deg, #f43f5e 0%, #0ea5e9 100%)';
+                    button.style.color = 'white';
+                    button.innerHTML = '<i class="fas fa-heart"></i>';
+                }
+                
+                // Update wishlist count in navbar using global function
+                if (typeof updateNavbarCounts === 'function') {
+                    updateNavbarCounts();
+                }
+                // Button visual feedback is sufficient - no confirmation popup needed
+            } else {
+                // Only show error feedback
+                if (typeof showConfirm === 'function') {
+                    showConfirm(data.message || 'Failed to update wishlist', 'Error');
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            if (typeof showConfirm === 'function') {
+                showConfirm('Network error: ' + error.message, 'Error');
+            }
+        });
+    }
+</script>
+
+<!-- Review Modal -->
+<div id="review-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 2000; align-items: center; justify-content: center;">
+    <div style="background: white; padding: 3rem; border-radius: 16px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2); animation: slideInUp 0.3s ease;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h3 style="margin: 0; font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg, #f43f5e 0%, #0ea5e9 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                Write Your Review
+            </h3>
+            <button onclick="closeReviewModal()" style="background: none; border: none; font-size: 2rem; color: #999; cursor: pointer; padding: 0; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <form id="modal-review-form" method="POST" action="{% url 'review_system:add_review' product.id %}" style="display: flex; flex-direction: column; gap: 1.5rem;">
+            {% csrf_token %}
+
+            <!-- Star Rating Display -->
+            <div style="text-align: center; padding: 1.5rem; background: linear-gradient(135deg, #f43f5e15 0%, #0ea5e915 100%); border-radius: 12px;">
+                <div style="font-size: 3rem; color: #fbbf24; margin-bottom: 0.5rem;">
+                    <span id="selected-stars">
+                        {% for i in "12345" %}
+                        <i class="far fa-star"></i>
+                        {% endfor %}
+                    </span>
+                </div>
+                <input type="hidden" id="modal-rating" name="rating" required>
+                <p id="selected-rating-label" style="margin: 0; font-size: 1.1rem; font-weight: 700; color: #333;">Select your rating</p>
+            </div>
+
+            <!-- Review Title -->
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <label for="modal-title" style="font-weight: 700; color: #333;">Review Title <span style="color: #f43f5e;">*</span></label>
+                <input type="text" id="modal-title" name="title" class="form-control" placeholder="What's the main point of your review?" required style="padding: 0.875rem 1rem; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 1rem; transition: all 0.3s ease;" onblur="this.style.borderColor='#e0e0e0'" onfocus="this.style.borderColor='#f43f5e'">
+            </div>
+
+            <!-- Review Comment -->
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <label for="modal-comment" style="font-weight: 700; color: #333;">Your Review <span style="color: #f43f5e;">*</span></label>
+                <textarea id="modal-comment" name="comment" class="form-control" rows="4" placeholder="Share your honest experience with this product..." required style="padding: 0.875rem 1rem; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 1rem; font-family: inherit; resize: vertical; transition: all 0.3s ease;" onblur="this.style.borderColor='#e0e0e0'" onfocus="this.style.borderColor='#f43f5e'"></textarea>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" id="modal-submit-btn" style="background: linear-gradient(135deg, #f43f5e 0%, #0ea5e9 100%); color: white; border: none; padding: 1rem 2rem; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 15px rgba(244, 63, 94, 0.3);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(244, 63, 94, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(244, 63, 94, 0.3)'">
+                <i class="fas fa-paper-plane"></i> Submit Review
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Review Modal Scripts -->
+<script>
+    const productId = {{ product.id }};
+    let selectedRating = 0;
+
+    function openReviewModal(rating) {
+        {% if user.is_authenticated %}
+            selectedRating = rating;
+            updateModalStars();
+            document.getElementById('review-modal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            document.getElementById('modal-rating').value = rating;
+        {% else %}
+            alert('Please log in to write a review.');
+            window.location.href = '{% url "account_login" %}?next=/reviews/product/{{ product.id }}/review/add/';
+        {% endif %}
+    }
+
+    function closeReviewModal() {
+        document.getElementById('review-modal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+        selectedRating = 0;
+        document.getElementById('modal-review-form').reset();
+    }
+
+    function updateModalStars() {
+        const labels = {
+            1: '😞 Poor',
+            2: '😐 Fair',
+            3: '😊 Good',
+            4: '😄 Very Good',
+            5: '🤩 Excellent'
+        };
+
+        let starsHtml = '';
+        for (let i = 1; i <= 5; i++) {
+            if (i <= selectedRating) {
+                starsHtml += '<i class="fas fa-star" style="color: #f43f5e;"></i> ';
+            } else {
+                starsHtml += '<i class="far fa-star" style="color: #e0e0e0;"></i> ';
+            }
+        }
+
+        document.getElementById('selected-stars').innerHTML = starsHtml;
+        document.getElementById('selected-rating-label').textContent = labels[selectedRating] || 'Select your rating';
+    }
+
+    // Close modal on background click
+    document.getElementById('review-modal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'review-modal') {
+            closeReviewModal();
+        }
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeReviewModal();
+        }
+    });
+
+    // Form submission
+    document.getElementById('modal-review-form')?.addEventListener('submit', function(e) {
+        if (!selectedRating || !document.getElementById('modal-rating').value) {
+            e.preventDefault();
+            alert('Please select a star rating');
+            return false;
+        }
+    });
+</script>
+
+<!-- Review System Scripts -->
+<script src="{% static 'js/review-system.js' %}"></script>
+
+{% endblock %}

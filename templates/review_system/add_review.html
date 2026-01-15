@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Write a Review - Everest Beauty{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<div class="breadcrumb-section" style="background: linear-gradient(135deg, #f43f5e 0%, #0ea5e9 100%); padding: 2rem 0;">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb" style="background: none; padding: 0; margin: 0;">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}" style="color: rgba(255,255,255,0.8);">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'products:product_detail' product.slug %}" style="color: rgba(255,255,255,0.8);">{{ product.name }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page" style="color: white;">Write Review</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<!-- Review Form Section -->
+<section style="padding: 4rem 0; background: linear-gradient(135deg, #f43f5e15 0%, #0ea5e915 100%);">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- Product Card -->
+                <div style="background: white; padding: 2rem; border-radius: 16px; margin-bottom: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.08); display: flex; align-items: center; gap: 2rem;">
+                    <div style="flex-shrink: 0; width: 120px; height: 120px; background: linear-gradient(135deg, #f2e9e4 0%, #e9d5c4 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                        {% if product.images.first %}
+                            <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                        {% else %}
+                            <i class="fas fa-image fa-3x" style="color: #999;"></i>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <h4 style="margin: 0 0 0.5rem 0; font-weight: 700; color: #333;">{{ product.name }}</h4>
+                        <p style="margin: 0 0 0.5rem 0; color: #666;">by <strong>{{ product.brand.name }}</strong></p>
+                        <a href="{% url 'products:product_detail' product.slug %}" style="color: #f43f5e; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 0.3rem;">
+                            View Product <i class="fas fa-arrow-right fa-xs"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Review Form -->
+                <div style="background: white; padding: 3rem; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+                    <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; background: linear-gradient(135deg, #f43f5e 0%, #0ea5e9 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                        Share Your Experience
+                    </h2>
+                    <p style="color: #666; margin-bottom: 2rem; font-size: 1.05rem;">
+                        Help other customers by sharing your honest review about this product
+                    </p>
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}" style="margin-bottom: 1.5rem;">
+                                {% if message.tags == 'error' %}
+                                    <i class="fas fa-exclamation-circle"></i>
+                                {% elif message.tags == 'success' %}
+                                    <i class="fas fa-check-circle"></i>
+                                {% else %}
+                                    <i class="fas fa-info-circle"></i>
+                                {% endif %}
+                                <span>{{ message }}</span>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form id="review-form" method="POST" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Star Rating Selection -->
+                        <div class="review-form-field" style="margin-bottom: 2rem;">
+                            <label for="star-rating" style="font-size: 1.1rem; font-weight: 700; color: #333; margin-bottom: 1rem;">
+                                <span>How would you rate this product?</span>
+                                <span class="required">*</span>
+                            </label>
+
+                            <div class="star-rating-widget">
+                                <div class="star-selection-container">
+                                    {% for i in "12345" %}
+                                        <div class="star-icon" tabindex="0" aria-label="Rate {{ i }} stars" role="button">
+                                            <i class="far fa-star"></i>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+
+                                <div class="rating-label-display"></div>
+
+                                {{ form.rating }}
+                            </div>
+
+                            {% if form.rating.errors %}
+                                <div class="form-text error" style="margin-top: 0.5rem;">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ form.rating.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Review Title -->
+                        <div class="review-form-field" style="margin-bottom: 1.5rem;">
+                            <label for="review-title">
+                                <span>Review Title</span>
+                                <span class="required">*</span>
+                            </label>
+                            {{ form.title }}
+                            <div class="form-text">
+                                <i class="fas fa-info-circle"></i>
+                                Give your review a short title (at least 5 characters)
+                            </div>
+                            {% if form.title.errors %}
+                                <div class="form-text error">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ form.title.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Review Comment -->
+                        <div class="review-form-field" style="margin-bottom: 1.5rem;">
+                            <label for="review-comment">
+                                <span>Your Detailed Review</span>
+                                <span class="required">*</span>
+                            </label>
+                            {{ form.comment }}
+                            <div class="form-text">
+                                <i class="fas fa-info-circle"></i>
+                                Please share your honest experience (at least 20 characters)
+                            </div>
+                            {% if form.comment.errors %}
+                                <div class="form-text error">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ form.comment.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                            <button type="submit" class="review-submit-btn" style="flex: 1;">
+                                <i class="fas fa-paper-plane"></i>Submit Review
+                            </button>
+                            <a href="{% url 'products:product_detail' product.slug %}" class="review-submit-btn" style="background: #e0e0e0; color: #333; text-decoration: none; display: flex; align-items: center; justify-content: center; flex: 1;">
+                                <i class="fas fa-times"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+
+                    <!-- Help Text -->
+                    <div style="background: linear-gradient(135deg, #f43f5e15 0%, #0ea5e915 100%); padding: 1.5rem; border-radius: 12px; margin-top: 2rem; border-left: 4px solid #f43f5e;">
+                        <h6 style="font-weight: 700; color: #333; margin-bottom: 1rem;">
+                            <i class="fas fa-lightbulb" style="color: #f43f5e; margin-right: 0.5rem;"></i>
+                            Tips for a Great Review:
+                        </h6>
+                        <ul style="margin: 0; padding-left: 1.5rem; color: #666; line-height: 1.8;">
+                            <li>Be specific about what you liked or disliked</li>
+                            <li>Include details about product quality, durability, and effectiveness</li>
+                            <li>Share how the product compared to your expectations</li>
+                            <li>Mention who this product is best suited for</li>
+                            <li>Be honest and respectful in your feedback</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Link CSS -->
+<link rel="stylesheet" href="{% static 'css/review-system.css' %}">
+
+<!-- Script -->
+<script src="{% static 'js/review-system.js' %}"></script>
+
+{% endblock %}

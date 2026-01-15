@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order Confirmation</title>
+</head>
+<body style="margin:0; padding:0; background:#f7f7f7; font-family: 'Segoe UI', Arial, sans-serif; color:#333;">
+    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background:#f7f7f7; padding:24px 0;">
+        <tr>
+            <td align="center">
+                <table role="presentation" cellpadding="0" cellspacing="0" width="600" style="background:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 6px 24px rgba(0,0,0,0.06);">
+                    <!-- Header -->
+                    <tr>
+                        <td style="padding:20px 24px; background: linear-gradient(135deg, {{ primary_color }} 0%, {{ secondary_color }} 100%); color:#fff;">
+                            <table width="100%" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td align="left" style="font-weight:800; font-size:20px;">
+                                        {% if logo_url %}
+                                            <img src="{{ logo_url }}" alt="{{ brand_name }}" style="max-height:40px; display:block;">
+                                        {% else %}
+                                            {{ brand_name }}
+                                        {% endif %}
+                                    </td>
+                                    <td align="right" style="font-size:14px; font-weight:600;">Order Confirmation</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Greeting -->
+                    <tr>
+                        <td style="padding:24px 24px 12px 24px;">
+                            <p style="margin:0; font-size:16px;">Hi {{ user.first_name|default:user.username }},</p>
+                            <p style="margin:8px 0 0 0; font-size:15px; color:#555;">Thank you for shopping with {{ brand_name }}. We’re preparing your order and will keep you updated.</p>
+                        </td>
+                    </tr>
+
+                    <!-- Order Summary Card -->
+                    <tr>
+                        <td style="padding:0 24px 16px 24px;">
+                            <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9fbff; border:1px solid #e5f0ff; border-radius:12px;">
+                                <tr>
+                                    <td style="padding:16px 18px;">
+                                        <table width="100%" cellpadding="0" cellspacing="0" style="font-size:14px; color:#444;">
+                                            <tr>
+                                                <td style="padding:4px 0;">Order ID:</td>
+                                                <td align="right" style="font-weight:700; color:#111;">#{{ order.order_number }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:4px 0;">Order Date:</td>
+                                                <td align="right">{{ order_date|date:"M d, Y" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:4px 0;">Payment Method:</td>
+                                                <td align="right">{{ payment_method|title }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:4px 0;">Estimated Delivery:</td>
+                                                <td align="right">{{ estimated_delivery }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:4px 0;">Total Paid:</td>
+                                                <td align="right" style="font-weight:800; color:{{ primary_color }};">Rs. {{ total }}</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Items -->
+                    <tr>
+                        <td style="padding:0 24px 8px 24px;">
+                            <h3 style="margin:0 0 8px 0; font-size:16px; color:#111;">Items in your order</h3>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:0 24px 16px 24px;">
+                            <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+                                {% for item in items %}
+                                <tr style="border-bottom:1px solid #f0f0f0;">
+                                    <td style="padding:10px 0; font-size:14px; color:#222;">{{ item.product_name }}</td>
+                                    <td align="center" style="padding:10px 0; font-size:14px; color:#666;">x{{ item.quantity }}</td>
+                                    <td align="right" style="padding:10px 0; font-size:14px; color:#222;">Rs. {{ item.total_price }}</td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Support & CTA -->
+                    <tr>
+                        <td style="padding:0 24px 24px 24px;">
+                            <table width="100%" cellpadding="0" cellspacing="0" style="background:#fff6f8; border:1px solid #ffe1e8; border-radius:12px;">
+                                <tr>
+                                    <td style="padding:16px 18px; font-size:14px; color:#444;">
+                                        <strong style="color:#111;">Need help?</strong><br/>
+                                        {% if support_email %}Email: <a href="mailto:{{ support_email }}" style="color:{{ secondary_color }}; text-decoration:none;">{{ support_email }}</a><br/>{% endif %}
+                                        {% if support_phone %}Phone: <span style="color:#111;">{{ support_phone }}</span><br/>{% endif %}
+                                        {% if business_hours %}Hours: <span style="color:#111;">{{ business_hours }}</span><br/>{% endif %}
+                                        <p style="margin:8px 0 0 0; color:#555;">We’re here to help with any questions about your order.</p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Thank You -->
+                    <tr>
+                        <td style="padding:0 24px 24px 24px;">
+                            <table width="100%" cellpadding="0" cellspacing="0" style="background:linear-gradient(135deg, {{ primary_color }} 0%, {{ secondary_color }} 100%); border-radius:12px;">
+                                <tr>
+                                    <td style="padding:16px 18px; color:#fff; font-size:15px;">
+                                        <strong>Thank you for choosing {{ brand_name }}!</strong><br/>
+                                        We appreciate your trust and look forward to delighting you again.
+                                    </td>
+                                    <td align="right" style="padding:16px 18px;">
+                                        <a href="{{ request.build_absolute_uri|default:'https://example.com' }}" style="background:#fff; color:{{ primary_color }}; text-decoration:none; padding:10px 14px; border-radius:8px; font-weight:700; font-size:14px; display:inline-block;">Visit Store</a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="padding:12px 24px 20px 24px; text-align:center; font-size:12px; color:#999;">
+                            © {{ brand_name }}. All rights reserved.
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

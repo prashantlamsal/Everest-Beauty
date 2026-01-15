@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Report Review - Everest Beauty{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Report Review</h1>
+    
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="reason" class="form-label">Reason for Reporting *</label>
+            <textarea class="form-control" id="reason" name="reason" rows="5" required 
+                      placeholder="Please explain why you are reporting this review..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-danger">Submit Report</button>
+        <a href="{% url 'review_system:product_reviews' review.product.id %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

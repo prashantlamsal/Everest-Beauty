@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Everest Beauty - Rare Beauty Inspired Collection{% endblock %}</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts - Inter for Modern Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/rare-beauty-style.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Rare Beauty Inspired Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'dashboard:home' %}">
+                <i class="fas fa-heart me-2" style="color: var(--rare-pink);"></i>
+                Everest Beauty
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard:home' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard:about' %}">About</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            Shop
+                        </a>
+                        <ul class="dropdown-menu border-0" style="box-shadow: var(--shadow-lg); border-radius: var(--radius-lg);">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-leaf me-2"></i>Skincare</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-palette me-2"></i>Makeup</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cut me-2"></i>Haircare</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-spray-can me-2"></i>Fragrance</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard:contact' %}">Contact</a>
+                    </li>
+                </ul>
+                
+                <!-- Search Bar -->
+                <form class="d-flex me-4" method="GET" action="{% url 'dashboard:search_products' %}">
+                    <div class="input-group">
+                        <input class="form-control border-0" type="search" name="q" placeholder="Find your perfect match..." aria-label="Search" style="background: var(--rare-soft-pink); border-radius: 25px 0 0 25px;">
+                        <button class="btn btn-outline-primary border-0" type="submit" style="border-radius: 0 25px 25px 0;">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+                
+                <!-- User Actions -->
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link position-relative" href="{% url 'dashboard:wishlist' %}">
+                                <i class="fas fa-heart"></i>
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill" style="background: var(--rare-pink); font-size: 0.7rem;">{{ navbar_wishlist_count|default:0 }}</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link position-relative" href="{% url 'dashboard:cart' %}">
+                                <i class="fas fa-shopping-bag"></i>
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill" style="background: var(--rare-coral); font-size: 0.7rem;">{{ navbar_cart_count|default:0 }}</span>
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <div class="user-avatar me-2">
+                                    {{ user.first_name.0|default:user.username.0|upper }}
+                                </div>
+                                <span class="user-name">{{ user.first_name|default:user.username }}</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end border-0" style="box-shadow: var(--shadow-lg); border-radius: var(--radius-lg); min-width: 220px;">
+                                <li class="dropdown-header">
+                                    <div class="d-flex align-items-center">
+                                        <div class="user-avatar-large me-3">
+                                            {{ user.first_name.0|default:user.username.0|upper }}
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold">{{ user.first_name|default:user.username }}</div>
+                                            {% if user.email %}
+                                                <small class="text-muted">{{ user.email }}</small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'user_management:user_profile' %}"><i class="fas fa-user me-2 text-primary"></i>My Profile</a></li>
+                                <li><a class="dropdown-item" href="{% url 'user_management:user_orders' %}"><i class="fas fa-box me-2 text-info"></i>My Orders</a></li>
+                                <li><a class="dropdown-item" href="{% url 'dashboard:wishlist' %}"><i class="fas fa-heart me-2 text-danger"></i>My Wishlist</a></li>
+                                <li><a class="dropdown-item" href="{% url 'user_management:user_settings' %}"><i class="fas fa-cog me-2 text-secondary"></i>Settings</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item logout-item" href="#" onclick="event.preventDefault(); showConfirm('Ready to leave? We\'ll miss you!', 'Sign Out').then(ok => { if(ok) window.location.href = '{% url 'account_logout' %}'; });">
+                                        <i class="fas fa-sign-out-alt me-2"></i>
+                                        <span>Sign Out</span>
+                                        <i class="fas fa-arrow-right ms-auto"></i>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'dashboard:logout' %}" style="font-size: 0.85rem; color: #6c757d;">
+                                        <i class="fas fa-external-link-alt me-2"></i>
+                                        Quick Logout
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'account_login' %}">Sign In</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-primary btn-sm ms-2" href="{% url 'account_signup' %}">Join Us</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Messages with Rare Beauty Style -->
+    {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show border-0" role="alert" style="border-radius: var(--radius-lg); background: var(--rare-soft-pink); color: var(--text-primary);">
+                    <i class="fas fa-info-circle me-2"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Rare Beauty Inspired Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h5>
+                        <i class="fas fa-heart me-2" style="color: var(--rare-pink);"></i>
+                        Everest Beauty
+                    </h5>
+                    <p style="color: var(--text-light); line-height: 1.7; margin-bottom: 2rem;">
+                        Discover authentic beauty products from Nepal. We believe beauty is about feeling confident in your own skin and expressing your unique self.
+                    </p>
+                    <div class="social-links">
+                        <a href="#" style="color: var(--text-light); font-size: 1.5rem; margin-right: 1rem; transition: var(--transition);" onmouseover="this.style.color='var(--rare-pink)'" onmouseout="this.style.color='var(--text-light)'">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" style="color: var(--text-light); font-size: 1.5rem; margin-right: 1rem; transition: var(--transition);" onmouseover="this.style.color='var(--rare-pink)'" onmouseout="this.style.color='var(--text-light)'">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                        <a href="#" style="color: var(--text-light); font-size: 1.5rem; margin-right: 1rem; transition: var(--transition);" onmouseover="this.style.color='var(--rare-pink)'" onmouseout="this.style.color='var(--text-light)'">
+                            <i class="fab fa-tiktok"></i>
+                        </a>
+                        <a href="#" style="color: var(--text-light); font-size: 1.5rem; margin-right: 1rem; transition: var(--transition);" onmouseover="this.style.color='var(--rare-pink)'" onmouseout="this.style.color='var(--text-light)'">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h5>Shop</h5>
+                    <ul>
+                        <li><a href="#">Face</a></li>
+                        <li><a href="#">Eyes</a></li>
+                        <li><a href="#">Lips</a></li>
+                        <li><a href="#">Body</a></li>
+                        <li><a href="#">Hair</a></li>
+                        <li><a href="#">Gift Sets</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h5>About</h5>
+                    <ul>
+                        <li><a href="#">Our Story</a></li>
+                        <li><a href="#">Ingredients</a></li>
+                        <li><a href="#">Sustainability</a></li>
+                        <li><a href="#">Press</a></li>
+                        <li><a href="#">Careers</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h5>Support</h5>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Shipping Info</a></li>
+                        <li><a href="#">Returns</a></li>
+                        <li><a href="#">Size Guide</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h5>Stay Connected</h5>
+                    <p style="color: var(--text-light); margin-bottom: 1.5rem;">Get the latest updates, tips, and exclusive offers.</p>
+                    <form class="d-flex gap-2">
+                        <input type="email" class="form-control" placeholder="Enter your email" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: var(--radius-full);">
+                        <button type="submit" class="btn btn-primary">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <p>&copy; 2024 Everest Beauty. All rights reserved.</p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <span style="color: var(--text-light); font-size: 0.9rem;">
+                            <i class="fas fa-shield-alt me-1"></i>
+                            Secure payments • 
+                            <i class="fas fa-truck me-1"></i>
+                            Free shipping over $50 • 
+                            <i class="fas fa-undo me-1"></i>
+                            30-day returns
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modern Confirmation Modal -->
+    <div id="confirmModal" class="confirm-modal" style="display:none;">
+        <div class="confirm-backdrop"></div>
+        <div class="confirm-dialog">
+            <div class="confirm-header">
+                <i class="fas fa-exclamation-circle confirm-icon"></i>
+                <h3 id="confirmTitle">Confirm Action</h3>
+            </div>
+            <div class="confirm-body">
+                <p id="confirmMessage">Are you sure you want to proceed?</p>
+            </div>
+            <div class="confirm-footer">
+                <button class="confirm-btn confirm-cancel" onclick="closeConfirm()">
+                    <i class="fas fa-times me-2"></i>Cancel
+                </button>
+                <button class="confirm-btn confirm-ok" id="confirmOkBtn">
+                    <i class="fas fa-check me-2"></i>Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .confirm-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .confirm-backdrop { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); animation: fadeIn 0.2s ease; }
+        .confirm-dialog { position: relative; background: #fff; border-radius: 20px; box-shadow: 0 25px 50px rgba(15, 23, 42, 0.25); max-width: 440px; width: 90%; animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); overflow: hidden; }
+        .confirm-header { background: linear-gradient(135deg, #f43f5e, #0ea5e9); color: #fff; padding: 24px; display: flex; align-items: center; gap: 14px; }
+        .confirm-icon { font-size: 2rem; opacity: 0.95; }
+        .confirm-header h3 { margin: 0; font-weight: 800; font-size: 1.3rem; letter-spacing: -0.3px; }
+        .confirm-body { padding: 28px 24px; }
+        .confirm-body p { margin: 0; color: #475569; font-size: 1.05rem; line-height: 1.6; font-weight: 500; }
+        .confirm-footer { padding: 20px 24px; background: #f8fafc; display: flex; gap: 12px; justify-content: flex-end; border-top: 1px solid #e2e8f0; }
+        .confirm-btn { border: none; padding: 12px 24px; border-radius: 12px; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; }
+        .confirm-cancel { background: #fff; color: #64748b; border: 1px solid #e2e8f0; }
+        .confirm-cancel:hover { background: #f1f5f9; border-color: #cbd5e1; transform: translateY(-1px); }
+        .confirm-ok { background: linear-gradient(135deg, #f43f5e, #0ea5e9); color: #fff; box-shadow: 0 8px 20px rgba(244, 63, 94, 0.3); }
+        .confirm-ok:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(244, 63, 94, 0.4); }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    </style>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Rare Beauty Inspired Interactions -->
+    <script>
+        // Modern Confirmation Dialog
+        function showConfirm(message, title = 'Confirm Action') {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('confirmModal');
+                const titleEl = document.getElementById('confirmTitle');
+                const messageEl = document.getElementById('confirmMessage');
+                const okBtn = document.getElementById('confirmOkBtn');
+                
+                titleEl.textContent = title;
+                messageEl.textContent = message;
+                modal.style.display = 'flex';
+                
+                const handleOk = () => {
+                    modal.style.display = 'none';
+                    okBtn.removeEventListener('click', handleOk);
+                    resolve(true);
+                };
+                
+                const handleCancel = () => {
+                    modal.style.display = 'none';
+                    okBtn.removeEventListener('click', handleOk);
+                    resolve(false);
+                };
+                
+                okBtn.addEventListener('click', handleOk);
+                modal.querySelector('.confirm-backdrop').addEventListener('click', handleCancel);
+            });
+        }
+        
+        function closeConfirm() {
+            document.getElementById('confirmModal').style.display = 'none';
+        }
+
+        // Global navbar update functions
+        function updateNavbarCartCount(count) {
+            const cartLink = document.querySelector('a[href*="cart"]');
+            if (cartLink) {
+                const badge = cartLink.querySelector('.badge');
+                if (badge) {
+                    badge.textContent = count;
+                }
+            }
+        }
+
+        function updateNavbarWishlistCount(count) {
+            const wishlistLink = document.querySelector('a[href*="wishlist"]');
+            if (wishlistLink) {
+                const badge = wishlistLink.querySelector('.badge');
+                if (badge) {
+                    badge.textContent = count;
+                }
+            }
+        }
+
+        function updateNavbarCounts() {
+            // Update both cart and wishlist counts from API
+            fetch('/api/cart/')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.total_items !== undefined) {
+                        updateNavbarCartCount(data.total_items);
+                    }
+                })
+                .catch(error => console.error('Could not fetch cart count'));
+
+            {% if user.is_authenticated %}
+            fetch('/api/wishlist/')
+                .then(response => response.json())
+                .then(data => {
+                    let count = 0;
+                    if (Array.isArray(data)) {
+                        count = data.length;
+                    } else if (data.results && Array.isArray(data.results)) {
+                        count = data.results.length;
+                    } else if (data.count !== undefined) {
+                        count = data.count;
+                    }
+                    if (count > 0) {
+                        updateNavbarWishlistCount(count);
+                    }
+                })
+                .catch(error => console.error('Could not fetch wishlist count'));
+            {% endif %}
+        }
+
+        // Add smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Add navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.style.background = 'rgba(255, 255, 255, 0.98)';
+                navbar.style.boxShadow = 'var(--shadow-lg)';
+            } else {
+                navbar.style.background = 'rgba(255, 255, 255, 0.95)';
+                navbar.style.boxShadow = 'var(--shadow-sm)';
+            }
+        });
+
+        // Add loading animation for buttons (but NOT form submit buttons)
+        document.querySelectorAll('.btn').forEach(button => {
+            // Skip buttons that are inside forms or are submit buttons
+            if (button.type === 'submit' || button.closest('form')) {
+                return; // Don't interfere with form submissions
+            }
+            
+            button.addEventListener('click', function() {
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Loading...';
+                this.disabled = true;
+                
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+                }, 1500);
+            });
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+    
+    <!-- Khalti JS SDK -->
+    <script src="https://khalti.com/static/khalti-checkout.js"></script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!-- Inline Review Widget Modal -->
+<div id="review-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 1000; align-items: center; justify-content: center;">
+    <div style="background: white; padding: 3rem; border-radius: 16px; max-width: 600px; width: 90%; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2); animation: slideInUp 0.3s ease;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h3 style="margin: 0; font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg, #f43f5e 0%, #0ea5e9 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                Share Your Review
+            </h3>
+            <button onclick="closeReviewModal()" style="background: none; border: none; font-size: 2rem; color: #999; cursor: pointer; padding: 0; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <form id="inline-review-form" method="POST" style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <!-- Star Rating -->
+            <div class="review-form-field">
+                <label>How would you rate this product? <span class="required">*</span></label>
+                <div class="star-selection-container" style="margin-top: 1rem;">
+                    {% for i in "12345" %}
+                        <div class="star-icon" tabindex="0" aria-label="Rate {{ i }} stars" role="button">
+                            <i class="far fa-star"></i>
+                        </div>
+                    {% endfor %}
+                </div>
+                <input type="hidden" id="id_rating" name="rating">
+                <div class="rating-label-display"></div>
+            </div>
+
+            <!-- Review Title -->
+            <div class="review-form-field">
+                <label for="inline-review-title">Review Title <span class="required">*</span></label>
+                <input type="text" id="inline-review-title" name="title" class="form-control" placeholder="Give your review a title...">
+            </div>
+
+            <!-- Review Comment -->
+            <div class="review-form-field">
+                <label for="inline-review-comment">Your Review <span class="required">*</span></label>
+                <textarea id="inline-review-comment" name="comment" class="form-control" rows="4" placeholder="Share your thoughts..."></textarea>
+            </div>
+
+            <!-- Buttons -->
+            <div style="display: flex; gap: 1rem;">
+                <button type="submit" class="review-submit-btn" style="flex: 1;">
+                    <i class="fas fa-paper-plane"></i>Submit Review
+                </button>
+                <button type="button" onclick="closeReviewModal()" class="review-submit-btn" style="background: #e0e0e0; color: #333; flex: 1;">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Script to manage modal -->
+<script>
+    function openReviewModal() {
+        const modal = document.getElementById('review-modal');
+        if (modal) {
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function closeReviewModal() {
+        const modal = document.getElementById('review-modal');
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    // Close modal on background click
+    document.getElementById('review-modal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'review-modal') {
+            closeReviewModal();
+        }
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeReviewModal();
+        }
+    });
+</script>
+
+<style>
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
