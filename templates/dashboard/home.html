@@ -40,25 +40,25 @@
                 <i class="category-icon fas fa-magic"></i>
                 <h3 class="category-title">Face</h3>
                 <p class="category-description">Complexion, concealer, blush & highlight</p>
-                <a href="#" class="btn btn-sm btn-outline-primary mt-3">Shop Face</a>
+                <a href="{% url 'products:product_list' %}?product_type=makeup" class="btn btn-sm btn-outline-primary mt-3">Shop Face</a>
             </div>
             <div class="category-card" data-aos="fade-up" data-aos-delay="100">
                 <i class="category-icon fas fa-eye"></i>
                 <h3 class="category-title">Eyes</h3>
                 <p class="category-description">Eyeshadow, liner, mascara & brows</p>
-                <a href="#" class="btn btn-sm btn-outline-primary mt-3">Shop Eyes</a>
+                <a href="{% url 'products:product_list' %}?product_type=makeup" class="btn btn-sm btn-outline-primary mt-3">Shop Eyes</a>
             </div>
             <div class="category-card" data-aos="fade-up" data-aos-delay="200">
                 <i class="category-icon fas fa-kiss"></i>
                 <h3 class="category-title">Lips</h3>
                 <p class="category-description">Lipstick, gloss, liner & treatments</p>
-                <a href="#" class="btn btn-sm btn-outline-primary mt-3">Shop Lips</a>
+                <a href="{% url 'products:product_list' %}?product_type=makeup" class="btn btn-sm btn-outline-primary mt-3">Shop Lips</a>
             </div>
             <div class="category-card" data-aos="fade-up" data-aos-delay="300">
                 <i class="category-icon fas fa-leaf"></i>
                 <h3 class="category-title">Skincare</h3>
                 <p class="category-description">Cleansers, serums, moisturizers & masks</p>
-                <a href="#" class="btn btn-sm btn-outline-primary mt-3">Shop Skincare</a>
+                <a href="{% url 'products:product_list' %}?product_type=skincare" class="btn btn-sm btn-outline-primary mt-3">Shop Skincare</a>
             </div>
         </div>
     </div>
@@ -312,7 +312,7 @@
                     From Nepal to the world, we're committed to creating high-quality, inclusive beauty 
                     products that celebrate diversity and self-expression.
                 </p>
-                <a href="#" class="btn btn-primary">
+                <a href="{% url 'dashboard:about' %}" class="btn btn-primary">
                     <i class="fas fa-arrow-right me-2"></i>
                     Learn More About Us
                 </a>
@@ -321,11 +321,11 @@
                 <div class="text-center">
                     <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-4" 
                          style="width: 200px; height: 200px; background: var(--gradient-primary);">
-                        <i class="fas fa-heart fa-5x text-white"></i>
+                        <i class="fas fa-star fa-5x text-white"></i>
                     </div>
-                    <h4 class="text-rare-pink mb-3">Mental Health Advocacy</h4>
+                    <h4 class="text-rare-pink mb-3">Quality & Care</h4>
                     <p class="text-secondary">
-                        We're dedicated to breaking down unrealistic standards of perfection and supporting mental health initiatives worldwide.
+                        We're committed to providing premium beauty products with carefully selected ingredients that care for your skin and enhance your natural beauty.
                     </p>
                 </div>
             </div>

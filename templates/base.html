@@ -41,10 +41,10 @@
                             Shop
                         </a>
                         <ul class="dropdown-menu border-0" style="box-shadow: var(--shadow-lg); border-radius: var(--radius-lg);">
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-leaf me-2"></i>Skincare</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-palette me-2"></i>Makeup</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-cut me-2"></i>Haircare</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-spray-can me-2"></i>Fragrance</a></li>
+                            <li><a class="dropdown-item" href="{% url 'products:product_list' %}?product_type=skincare"><i class="fas fa-leaf me-2"></i>Skincare</a></li>
+                            <li><a class="dropdown-item" href="{% url 'products:product_list' %}?product_type=makeup"><i class="fas fa-palette me-2"></i>Makeup</a></li>
+                            <li><a class="dropdown-item" href="{% url 'products:product_list' %}?product_type=haircare"><i class="fas fa-cut me-2"></i>Haircare</a></li>
+                            <li><a class="dropdown-item" href="{% url 'products:product_list' %}?product_type=fragrance"><i class="fas fa-spray-can me-2"></i>Fragrance</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">

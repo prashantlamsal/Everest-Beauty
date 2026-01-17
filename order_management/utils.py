@@ -51,7 +51,7 @@ def send_order_confirmation_email(order, request=None, estimated_delivery: str |
 
         email = EmailMultiAlternatives(subject, text_content, from_email, [order.shipping_email])
         email.attach_alternative(html_content, 'text/html')
-        email.send(fail_silently=True)
+        email.send(fail_silently=getattr(settings, 'EMAIL_FAIL_SILENTLY', False))
     except Exception:
         # Do not raise; logging can be added later
         return False

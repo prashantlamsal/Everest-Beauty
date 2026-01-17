@@ -200,7 +200,15 @@ LOGIN_REDIRECT_URL = '/'  # Redirect to home page after login
 LOGOUT_REDIRECT_URL = '/'  # Django's logout redirect
 
 # Email settings
-EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
+# Default to SMTP for real delivery; fall back to console when explicitly requested.
+USE_CONSOLE_EMAIL_BACKEND = config('USE_CONSOLE_EMAIL_BACKEND', default=False, cast=bool)
+EMAIL_BACKEND = (
+    'django.core.mail.backends.console.EmailBackend'
+    if USE_CONSOLE_EMAIL_BACKEND
+    else config('EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
+)
+EMAIL_FAIL_SILENTLY = config('EMAIL_FAIL_SILENTLY', default=False, cast=bool)
+
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='no-reply@everestbeauty.com')
 EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
 EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)

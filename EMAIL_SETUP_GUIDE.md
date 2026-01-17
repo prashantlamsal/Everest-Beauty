@@ -26,7 +26,7 @@ When you place an order, check the Django runserver terminal - you'll see the fu
    EMAIL_PORT=587
    EMAIL_USE_TLS=True
    EMAIL_HOST_USER=your-email@gmail.com
-   EMAIL_HOST_PASSWORD=your-16-char-app-password
+   EMAIL_HOST_PASSWORD=zfcx wqam ksbq khof
    DEFAULT_FROM_EMAIL=your-email@gmail.com
    
    BRAND_NAME=Everest Beauty
