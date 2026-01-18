@@ -97,3 +97,34 @@ class Banner(models.Model):
         if self.end_date and now > self.end_date:
             return False
         return self.is_active
+
+class ContactMessage(models.Model):
+    """Model to store contact form submissions"""
+    SUBJECT_CHOICES = [
+        ('general', 'General Inquiry'),
+        ('product', 'Product Information'),
+        ('order', 'Order Status'),
+        ('shipping', 'Shipping & Delivery'),
+        ('returns', 'Returns & Refunds'),
+        ('technical', 'Technical Support'),
+        ('partnership', 'Partnership'),
+        ('other', 'Other'),
+    ]
+    
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20, blank=True)
+    subject = models.CharField(max_length=20, choices=SUBJECT_CHOICES)
+    message = models.TextField()
+    newsletter_subscribed = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+    
+    class Meta:
+        verbose_name = 'Contact Message'
+        verbose_name_plural = 'Contact Messages'
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.first_name} {self.last_name} - {self.subject} ({self.created_at.strftime('%Y-%m-%d')})"

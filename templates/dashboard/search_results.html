@@ -4,21 +4,31 @@
 {% block title %}Search Results - Everest Beauty{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1 class="mb-4">Search Results{% if query %} for "{{ query }}"{% endif %}</h1>
+<div class="container mt-5">
+    <div class="mb-4">
+        <h2 class="fw-bold">Search Results{% if query %} for "{{ query }}"{% endif %}</h2>
+        {% if query and total_results > 0 %}
+            <p class="text-muted">Found {{ total_results }} product{{ total_results|pluralize }}</p>
+        {% endif %}
+    </div>
     
     {% if products %}
         <div class="row">
             {% for product in products %}
             <div class="col-md-3 mb-4">
-                <div class="card">
+                <div class="card h-100 shadow-sm">
                     {% if product.main_image %}
-                    <img src="{{ product.main_image.url }}" class="card-img-top" alt="{{ product.name }}">
+                    <img src="{{ product.main_image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 250px; object-fit: cover;">
+                    {% else %}
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
+                        <i class="fas fa-image text-muted fa-4x"></i>
+                    </div>
                     {% endif %}
                     <div class="card-body">
                         <h5 class="card-title">{{ product.name }}</h5>
-                        <p class="card-text">Rs. {{ product.current_price }}</p>
-                        <a href="{% url 'products:product_detail' product.slug %}" class="btn btn-primary btn-sm">View</a>
+                        <p class="card-text text-muted">{{ product.brand.name }}</p>
+                        <p class="card-text fw-bold">Rs. {{ product.price }}</p>
+                        <a href="{% url 'products:product_detail' product.slug %}" class="btn btn-sm" style="background: var(--rare-pink); color: white; border: none;">View Details</a>
                     </div>
                 </div>
             </div>
@@ -27,8 +37,13 @@
     {% else %}
         <div class="text-center py-5">
             <i class="fas fa-search fa-4x text-muted mb-3"></i>
-            <h3>No Products Found</h3>
-            <p class="text-muted">Try adjusting your search criteria.</p>
+            <h4 class="fw-bold">No products found</h4>
+            {% if query %}
+            <p class="text-muted">We couldn't find any products matching "{{ query }}"</p>
+            <p class="text-muted">Try using different keywords or browse our <a href="{% url 'products:product_list' %}">full product catalog</a></p>
+            {% else %}
+            <p class="text-muted">Enter a search term to find products.</p>
+            {% endif %}
         </div>
     {% endif %}
 </div>

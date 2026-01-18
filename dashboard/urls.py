@@ -18,5 +18,6 @@ urlpatterns = [
     path('wishlist/add/<int:product_id>/', views.add_to_wishlist, name='add_to_wishlist'),
     path('wishlist/remove/<int:product_id>/', views.remove_from_wishlist, name='remove_from_wishlist'),
     path('search/', views.search_products, name='search_products'),
+    path('api/product-suggestions/', views.product_suggestions, name='product_suggestions'),
     path('logout/', views.custom_logout, name='logout'),
 ]

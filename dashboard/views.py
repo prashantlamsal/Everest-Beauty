@@ -80,56 +80,135 @@ def about(request):
 
 
 def contact(request):
-    """Contact page view"""
+    """Contact page view - handles both GET and POST requests"""
+    if request.method == 'POST':
+        # Process the contact form submission
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
+        email = request.POST.get('email', '').strip()
+        phone = request.POST.get('phone', '').strip()
+        subject = request.POST.get('subject', '').strip()
+        message = request.POST.get('message', '').strip()
+        newsletter = request.POST.get('newsletter', False)
+        
+        # Validate required fields
+        if not all([first_name, last_name, email, subject, message]):
+            messages.error(request, 'Please fill in all required fields.')
+            return render(request, 'dashboard/contact.html')
+        
+        # Validate email format
+        if '@' not in email or '.' not in email:
+            messages.error(request, 'Please provide a valid email address.')
+            return render(request, 'dashboard/contact.html')
+        
+        try:
+            # Create and save contact message
+            from .models import ContactMessage
+            contact_msg = ContactMessage.objects.create(
+                first_name=first_name,
+                last_name=last_name,
+                email=email,
+                phone=phone,
+                subject=subject,
+                message=message,
+                newsletter_subscribed=bool(newsletter)
+            )
+            
+            # Show success message
+            messages.success(request, 'Thank you! Your message has been sent successfully. We will get back to you soon.')
+            
+            # Log for debugging
+            print(f"Contact message created: {contact_msg}")
+            
+            # Redirect to same page to avoid form resubmission
+            return redirect('dashboard:contact')
+            
+        except Exception as e:
+            print(f"Error saving contact message: {str(e)}")
+            messages.error(request, 'An error occurred while sending your message. Please try again.')
+            return render(request, 'dashboard/contact.html')
+    
+    # Handle GET request - just render the form
     return render(request, 'dashboard/contact.html')
 
 
 def search_products(request):
-    """Product search view"""
-    query = request.GET.get('q', '')
-    category = request.GET.get('category', '')
-    brand = request.GET.get('brand', '')
-    price_min = request.GET.get('price_min', '')
-    price_max = request.GET.get('price_max', '')
+    """
+    Product search view using LINEAR SEARCH algorithm.
     
-    products = Product.objects.filter(is_active=True).select_related('brand', 'category')
+    This implementation performs a case-insensitive linear search by iterating
+    through all products one by one and comparing the search keyword only with
+    the product name. No database queries or full-text search is used.
+    """
+    query = request.GET.get('q', '').strip()
+    
+    # Fetch all active products from the database (one-time fetch)
+    all_products = Product.objects.filter(is_active=True).select_related('brand', 'category')
+    
+    # Initialize list to store matched products
+    matched_products = []
     
     if query:
-        products = products.filter(
-            Q(name__icontains=query) |
-            Q(description__icontains=query) |
-            Q(brand__name__icontains=query) |
-            Q(category__name__icontains=query)
-        )
-    
-    if category:
-        products = products.filter(category__slug=category)
-    
-    if brand:
-        products = products.filter(brand__slug=brand)
-    
-    if price_min:
-        products = products.filter(price__gte=price_min)
-    
-    if price_max:
-        products = products.filter(price__lte=price_max)
+        # LINEAR SEARCH: Loop through all products one by one
+        # This algorithm checks each product name sequentially
+        query_lower = query.lower()  # Convert search query to lowercase for case-insensitive comparison
+        
+        for product in all_products:
+            # Compare the search keyword only with the product name (case-insensitive)
+            if query_lower in product.name.lower():
+                matched_products.append(product)
+    else:
+        # If no query is provided, show all products
+        matched_products = list(all_products)
     
     # Get filter options
     categories = Category.objects.filter(is_active=True)
     brands = Brand.objects.filter(is_active=True)
     
     context = {
-        'products': products,
+        'products': matched_products,
         'query': query,
         'categories': categories,
         'brands': brands,
-        'selected_category': category,
-        'selected_brand': brand,
-        'price_min': price_min,
-        'price_max': price_max,
+        'total_results': len(matched_products),
     }
     
     return render(request, 'dashboard/search_results.html', context)
+
+
+def product_suggestions(request):
+    """
+    API endpoint that returns product name suggestions using LINEAR SEARCH.
+    
+    This endpoint is called via AJAX when user types in the search bar.
+    Returns JSON with matching product names (limited to 8 suggestions).
+    
+    Linear search algorithm: Check each product name sequentially for matches.
+    """
+    query = request.GET.get('q', '').strip()
+    suggestions = []
+    
+    if query and len(query) >= 2:  # Only search if query has at least 2 characters
+        # Fetch all active products from the database
+        all_products = Product.objects.filter(is_active=True).values('name', 'slug')
+        
+        # Convert query to lowercase for case-insensitive comparison
+        query_lower = query.lower()
+        
+        # LINEAR SEARCH: Loop through all products one by one
+        # This algorithm checks each product name sequentially
+        for product in all_products:
+            # Compare the search keyword only with the product name (case-insensitive)
+            if query_lower in product['name'].lower():
+                suggestions.append({
+                    'name': product['name'],
+                    'slug': product['slug']
+                })
+                # Limit suggestions to 8 results
+                if len(suggestions) >= 8:
+                    break
+    
+    return JsonResponse({'suggestions': suggestions})
 
 
 def cart_view(request):

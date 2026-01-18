@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Cart, CartItem, Banner
+from .models import Cart, CartItem, Banner, ContactMessage
 
 
 class CartItemInline(admin.TabularInline):
@@ -52,3 +52,32 @@ class BannerAdmin(admin.ModelAdmin):
             'fields': ('created_at',)
         }),
     )
+
+@admin.register(ContactMessage)
+class ContactMessageAdmin(admin.ModelAdmin):
+    list_display = [
+        'get_full_name', 'email', 'get_subject_display', 'is_read', 'created_at'
+    ]
+    list_filter = ['subject', 'is_read', 'newsletter_subscribed', 'created_at']
+    search_fields = ['first_name', 'last_name', 'email', 'message']
+    list_editable = ['is_read']
+    readonly_fields = ['created_at']
+    
+    fieldsets = (
+        ('Sender Information', {
+            'fields': ('first_name', 'last_name', 'email', 'phone')
+        }),
+        ('Message', {
+            'fields': ('subject', 'message')
+        }),
+        ('Settings', {
+            'fields': ('is_read', 'newsletter_subscribed')
+        }),
+        ('Timestamp', {
+            'fields': ('created_at',)
+        }),
+    )
+    
+    def get_full_name(self, obj):
+        return f"{obj.first_name} {obj.last_name}"
+    get_full_name.short_description = 'Name'

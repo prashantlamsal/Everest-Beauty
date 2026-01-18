@@ -52,13 +52,25 @@
                     </li>
                 </ul>
                 
-                <!-- Search Bar -->
-                <form class="d-flex me-4" method="GET" action="{% url 'dashboard:search_products' %}">
-                    <div class="input-group">
-                        <input class="form-control border-0" type="search" name="q" placeholder="Find your perfect match..." aria-label="Search" style="background: var(--rare-soft-pink); border-radius: 25px 0 0 25px;">
+                <!-- Search Bar with Autocomplete Suggestions -->
+                <form class="d-flex me-4 position-relative" method="GET" action="{% url 'dashboard:search_products' %}" id="searchForm">
+                    <div class="input-group" style="position: relative; width: 100%;">
+                        <input 
+                            class="form-control border-0" 
+                            type="search" 
+                            name="q" 
+                            placeholder="Find your perfect match..." 
+                            aria-label="Search" 
+                            id="searchInput"
+                            style="background: var(--rare-soft-pink); border-radius: 25px 0 0 25px;"
+                            autocomplete="off">
                         <button class="btn btn-outline-primary border-0" type="submit" style="border-radius: 0 25px 25px 0;">
                             <i class="fas fa-search"></i>
                         </button>
+                        <!-- Suggestions dropdown -->
+                        <ul class="list-group position-absolute w-100" id="suggestionsDropdown" 
+                            style="display: none; top: 100%; left: 0; right: 0; border-radius: 0 0 10px 10px; box-shadow: var(--shadow-lg); z-index: 1000; max-height: 300px; overflow-y: auto;">
+                        </ul>
                     </div>
                 </form>
                 
@@ -419,5 +431,111 @@
     
     <!-- Khalti JS SDK -->
     <script src="https://khalti.com/static/khalti-checkout.js"></script>
+    
+    <!-- Product Search Autocomplete Script -->
+    <script>
+        // LINEAR SEARCH AUTOCOMPLETE: Fetch and display product name suggestions
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const suggestionsDropdown = document.getElementById('suggestionsDropdown');
+            let suggestionTimeout;
+            
+            // Listen for input changes to fetch suggestions
+            searchInput.addEventListener('input', function() {
+                const query = this.value.trim();
+                
+                // Clear previous timeout
+                clearTimeout(suggestionTimeout);
+                
+                // Hide suggestions if input is empty or less than 2 characters
+                if (!query || query.length < 2) {
+                    suggestionsDropdown.style.display = 'none';
+                    suggestionsDropdown.innerHTML = '';
+                    return;
+                }
+                
+                // Debounce the request (wait 300ms before sending)
+                suggestionTimeout = setTimeout(() => {
+                    fetchSuggestions(query);
+                }, 300);
+            });
+            
+            // Function to fetch suggestions from the server using linear search
+            function fetchSuggestions(query) {
+                // Call the API endpoint that performs linear search
+                fetch(`/api/product-suggestions/?q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        displaySuggestions(data.suggestions, query);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching suggestions:', error);
+                        suggestionsDropdown.style.display = 'none';
+                    });
+            }
+            
+            // Function to display suggestions in the dropdown
+            function displaySuggestions(suggestions, query) {
+                suggestionsDropdown.innerHTML = '';
+                
+                if (suggestions.length === 0) {
+                    suggestionsDropdown.style.display = 'none';
+                    return;
+                }
+                
+                // Create suggestion items
+                suggestions.forEach(suggestion => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item border-0 px-3 py-2 cursor-pointer';
+                    li.style.cursor = 'pointer';
+                    li.style.transition = 'background-color 0.2s';
+                    
+                    // Highlight the matching part of the text
+                    const highlightedName = highlightMatch(suggestion.name, query);
+                    
+                    li.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-search" style="color: var(--rare-pink); font-size: 0.9rem;"></i>
+                            <span>${highlightedName}</span>
+                        </div>
+                    `;
+                    
+                    // Hover effect
+                    li.addEventListener('mouseover', function() {
+                        this.style.backgroundColor = 'var(--rare-soft-pink)';
+                    });
+                    li.addEventListener('mouseout', function() {
+                        this.style.backgroundColor = 'white';
+                    });
+                    
+                    // Click to fill search input and submit
+                    li.addEventListener('click', function() {
+                        searchInput.value = suggestion.name;
+                        suggestionsDropdown.style.display = 'none';
+                        // Optional: auto-submit the form
+                        document.getElementById('searchForm').submit();
+                    });
+                    
+                    suggestionsDropdown.appendChild(li);
+                });
+                
+                // Show the dropdown
+                suggestionsDropdown.style.display = 'block';
+            }
+            
+            // Function to highlight the matching text
+            function highlightMatch(text, query) {
+                const regex = new RegExp(`(${query})`, 'gi');
+                return text.replace(regex, '<strong style="color: var(--rare-pink);">$1</strong>');
+            }
+            
+            // Hide suggestions when clicking outside the search box
+            document.addEventListener('click', function(event) {
+                if (!event.target.closest('#searchForm')) {
+                    suggestionsDropdown.style.display = 'none';
+                }
+            });
+        });
+    </script>
 </body>
 </html>
